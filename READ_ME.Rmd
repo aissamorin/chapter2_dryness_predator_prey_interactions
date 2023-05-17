@@ -1,0 +1,30 @@
+---
+title: "READ_ME"
+author: "Aïssa Morin"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data preparation
+
+N.B: Copy of the original data from Yolan are in Chapter_2_Dryness... -> documents --> Donnees_Yolan --> Donnee_Yolan_05-2023--> 'Data_Fat_analyses_Yolan'
+
+Original dataset was modified and saved under 'Data_Fat_analyses_raw' in 'Chapter2.Dryness. ... '--> data --> 'Data_Fat_analyses_raw'
+
+Modifications (manual because color coded) on xlxs file -->  column addition: 'collection_interval': values : blue (i.e. Yolan color code) --> early : sample collected within 6 days, yellow -->  intermediate : sample collected between 6 and 8 days (included ?), red --> late : sample collected after 8 days (should be exclude from analyses)
+
+Save as a csv file for R processing 
+
+__Read data__
+
+use function 'read_fat_data_raw()' to read csv file with raw fat data from Yolan
+
+__Clean dataset__
+
+Aim at cleaning, organising and only keep necessary info from fat raw data
+
+
