@@ -37,5 +37,4 @@ usethis::use_r("02_clean_dataset")
 
 
 
-# Load functions (?)
-devtools::load_all()
+
