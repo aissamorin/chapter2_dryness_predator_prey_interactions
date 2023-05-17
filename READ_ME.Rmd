@@ -15,7 +15,11 @@ N.B: Copy of the original data from Yolan are in Chapter_2_Dryness... -> documen
 
 Original dataset was modified and saved under 'Data_Fat_analyses_raw' in 'Chapter2.Dryness. ... '--> data --> 'Data_Fat_analyses_raw'
 
-Modifications (manual because color coded) on xlxs file -->  column addition: 'collection_interval': values : blue (i.e. Yolan color code) --> early : sample collected within 6 days, yellow -->  intermediate : sample collected between 6 and 8 days (included ?), red --> late : sample collected after 8 days (should be exclude from analyses)
+Modifications (manual because color coded) on xlxs file -->  column addition: 'collection_interval, values (i.e. Yolan color code)) :  
+
++ blue  --> early : sample collected within 6 days, 
++ yellow -->  intermediate : sample collected between 6 and 8 days (included ?), 
++ red --> late : sample collected after 8 days (should be exclude from analyses)
 
 Save as a csv file for R processing 
 
@@ -27,11 +31,21 @@ __Clean dataset__
 
 Aim at cleaning, organising and only keep necessary info from fat raw data using the function 'clean_raw_fat_data'
 
-The function : 
-- removes all 'mass_Jxx' columns, 
-- removes columns: "samples_marrow_fat_rate", "samples_marrow_fat_rate_without_residuals", "bone_marrow_fat_rate_mean", "bone_marrow_fat_rate_mean_without_residuals","estimated_bc","estimated_bc_without_residuals",  "comments" and any columns after,
-- removes empty raws after 258th line
-- removes raws corresponding to Buffalo_01 --> a test sample that wasn't harvested following the study desidn (but opportunistically) and  must, thus, be excluded because it wasn't
+The function :  
+
++ removes all 'mass_Jxx' columns, 
++ removes columns: "samples_marrow_fat_rate", "samples_marrow_fat_rate_without_residuals", "bone_marrow_fat_rate_mean", "bone_marrow_fat_rate_mean_without_residuals","estimated_bc","estimated_bc_without_residuals",  "comments" and any columns after,
++ removes empty raws after 258th line
++ removes raws corresponding to Buffalo_01 --> a test sample that wasn't harvested following the study desidn (but opportunistically) and  must, thus, be excluded because it wasn't
 
 __Save cleaned dataset__
+
+Aim at saving cleaned data for fat analyses 'save_cleaned_data'
+
+The function takes 2 arguments :   
+
++  _cleaned_data_ : cleaned raw data for fat analyses (after using clean_raw_fat_data function)
++ _filename_ : the name we want the dataset to be saved under
+
+The cleaned dataset is saved under ./output/clean_fat_data/ 
 

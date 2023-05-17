@@ -365,12 +365,45 @@ display: none;
 <p>Original dataset was modified and saved under ‘Data_Fat_analyses_raw’
 in ‘Chapter2.Dryness. …’–&gt; data –&gt; ‘Data_Fat_analyses_raw’</p>
 <p>Modifications (manual because color coded) on xlxs file –&gt; column
-addition: ‘collection_interval’: values : blue (i.e. Yolan color code)
-–&gt; early : sample collected within 6 days, yellow –&gt; intermediate
-: sample collected between 6 and 8 days (included ?), red –&gt; late :
-sample collected after 8 days (should be exclude from analyses)</p>
+addition: ’collection_interval, values :</p>
+<ul>
+<li>blue (i.e. Yolan color code) –&gt; early : sample collected within 6
+days,</li>
+<li>yellow –&gt; intermediate : sample collected between 6 and 8 days
+(included ?),</li>
+<li>red –&gt; late : sample collected after 8 days (should be exclude
+from analyses)</li>
+</ul>
 <p>Save as a csv file for R processing</p>
 <p><strong>Read data</strong></p>
+<p>use function ‘read_fat_data_raw()’ to read csv file with raw fat data
+from Yolan</p>
+<p><strong>Clean dataset</strong></p>
+<p>Aim at cleaning, organising and only keep necessary info from fat raw
+data using the function ‘clean_raw_fat_data’</p>
+<p>The function :</p>
+<ul>
+<li>removes all ‘mass_Jxx’ columns,</li>
+<li>removes columns: “samples_marrow_fat_rate”,
+“samples_marrow_fat_rate_without_residuals”,
+“bone_marrow_fat_rate_mean”,
+“bone_marrow_fat_rate_mean_without_residuals”,“estimated_bc”,“estimated_bc_without_residuals”,
+“comments” and any columns after,</li>
+<li>removes empty raws after 258th line</li>
+<li>removes raws corresponding to Buffalo_01 –&gt; a test sample that
+wasn’t harvested following the study desidn (but opportunistically) and
+must, thus, be excluded because it wasn’t</li>
+</ul>
+<p><strong>Save cleaned dataset</strong></p>
+<p>Aim at saving cleaned data for fat analyses ‘save_cleaned_data’</p>
+<p>The function takes 2 arguments :</p>
+<ul>
+<li><em>cleaned_data</em> : cleaned raw data for fat analyses (after
+using clean_raw_fat_data function)</li>
+<li><em>filename</em> : the name we want the dataset to be saved
+under</li>
+</ul>
+<p>The cleaned dataset is saved under ./output/clean_fat_data/</p>
 </div>
 
 

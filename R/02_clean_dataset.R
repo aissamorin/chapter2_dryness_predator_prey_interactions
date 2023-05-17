@@ -5,7 +5,7 @@
 ########################################################################################################################
 
 
-# Clean raw data for fat analyses
+# Clean raw data for fat analyses ####
 
 #' Clean raw data for fat analyses
 #'
@@ -29,5 +29,23 @@ clean_raw_fat_data <- function(fat_data_raw) {
 
 } #End of function clean_raw_fat_data
 
+
+# Save cleaned data for fat analyses ####
+
+
+#' Save cleaned data for fat analyses
+#'
+#' @param cleaned_data cleaned raw data for fat analyses (after using clean_raw_fat_data function)
+#' @param filename the name we want the dataset to be saved under
+#'
+#' @return
+#' @export
+
+save_cleaned_data <- function(cleaned_data,
+                              filename){
+
+readr::write_csv2(cleaned_data, here::here(paste("output/clean_fat_data/", filename,".csv",  sep ="")))
+
+}
 
 
