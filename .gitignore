@@ -1,6 +1,7 @@
 .Rproj.user
 
 #Added manually by Aissa Morin
+
 .Rhistory
 .RData
 .Ruserdata
@@ -9,3 +10,4 @@ CONDUCT.md
 CONTRIBUTING.md
 /data/
 /documents/
+/output/
