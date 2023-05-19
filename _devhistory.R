@@ -34,6 +34,7 @@ devtools::document()
 
 usethis::use_r("01_read_dataset")
 usethis::use_r("02_clean_dataset")
+usethis::use_r("03_data_exploration")
 
 
 
