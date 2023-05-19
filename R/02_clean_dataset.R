@@ -22,7 +22,9 @@ clean_raw_fat_data <- function(fat_data_raw) {
   #remove columns: "samples_marrow_fat_rate", "samples_marrow_fat_rate_without_residuals", "bone_marrow_fat_rate_mean",
   #"bone_marrow_fat_rate_mean_without_residuals","estimated_bc","estimated_bc_without_residuals",  "comments" and any columns after,
   dplyr::select(samples_ID:sample_dry_mass) %>%
-  #Remove empty lines after 258th line
+  # Remove all replicated samples tested after J-9, etc... /ex 'Hip_B_046-J12'
+  dplyr::filter(!stringr::str_detect(samples_ID, "\\-[:upper:]\\d+$"))  %>%
+  #Remove empty lines after 233rd row
   dplyr::filter(!is.na(samples_ID)) %>%
   #Remove Buffalo_01 -->i.e. remove 5 lines --> 258 --> 253 raws
   dplyr::filter(!carcass_ID == 'Buffalo_01')

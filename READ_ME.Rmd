@@ -35,7 +35,8 @@ The function :
 
 + removes all 'mass_Jxx' columns, 
 + removes columns: "samples_marrow_fat_rate", "samples_marrow_fat_rate_without_residuals", "bone_marrow_fat_rate_mean", "bone_marrow_fat_rate_mean_without_residuals","estimated_bc","estimated_bc_without_residuals",  "comments" and any columns after,
-+ removes empty raws after 258th line
++ removes all replicated samples tested after J-9, etc... /ex 'Hip_B_046-J12'
++ removes empty raws after 233rd row
 + removes raws corresponding to Buffalo_01 --> a test sample that wasn't harvested following the study desidn (but opportunistically) and  must, thus, be excluded because it wasn't
 
 __Save cleaned dataset__
