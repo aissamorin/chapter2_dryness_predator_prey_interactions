@@ -18,7 +18,7 @@ get_CV_dry_mass_table <- function(clean_fat_data){
   clean_fat_data %>%
 # group by sample ID to get summary stat per sample_ID
   dplyr::group_by(samples_ID) %>%
-  dplyr::summarise(nb_sub_samples = n(), # number of replicate for each carcass samples
+  dplyr::summarise(nb_sub_samples = dplyr::n(), # number of replicates for each carcass samples
                    mean_dry_mass = mean(sample_dry_mass),# mean dry mass for each sample
                    sd_dry_mass = sd(sample_dry_mass)) %>%# standard deviation for each sample
   dplyr::mutate(CV_dry_mass = sd_dry_mass/mean_dry_mass) # coefficient of variation = sd/mean
@@ -64,7 +64,9 @@ ggsave(sample_dry_mass_boxplot, file =here::here("output", "data_exploration", "
 
 }
 
-# II "Gold standard" data ####
+# II Fat rate ~ Month ####
+
+#> "Gold standard" data ####
 # adult and indiv only, bones collected before 6 days
 
 
