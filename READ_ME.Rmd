@@ -38,7 +38,7 @@ Modifications (manual because color coded) on xlxs file -->  column addition: 'c
 + yellow -->  intermediate : sample collected between 6 and 8 days (included ?), 
 + red --> late : sample collected after 8 days (should be exclude from analyses)
 
-Save as a csv file for R processing 
+Saved as a csv file for R processing 
 
 __Read data__
 
@@ -54,7 +54,8 @@ The function :
 + removes columns: "samples_marrow_fat_rate", "samples_marrow_fat_rate_without_residuals", "bone_marrow_fat_rate_mean", "bone_marrow_fat_rate_mean_without_residuals","estimated_bc","estimated_bc_without_residuals",  "comments" and any columns after,
 + removes all replicated samples tested after J-9, etc... /ex 'Hip_B_046-J12'
 + removes empty raws after 233rd row
-+ removes raws corresponding to Buffalo_01 --> a test sample that wasn't harvested following the study desidn (but opportunistically) and  must, thus, be excluded because it wasn't
++ removes raws corresponding to Buffalo_01 --> a test sample that wasn't harvested following the study design (but opportunistically) and  must, thus, be excluded because it wasn't
++ removes raws corresponding to hyena's data or with no information on predator species (NA)
 
 __Save cleaned dataset__
 
@@ -103,4 +104,4 @@ readr::read_csv2(here::here("output","data_exploration", "CV_dry_mass_table.csv"
 
 <br>
 CV < 1 i.e. SD < mean --> relatively low variability ?
-
+https://statisticsbyjim.com/basics/coefficient-variation/ 

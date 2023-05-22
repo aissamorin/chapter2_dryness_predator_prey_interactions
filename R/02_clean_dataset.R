@@ -27,7 +27,8 @@ clean_raw_fat_data <- function(fat_data_raw) {
   #Remove empty lines after 233rd row
   dplyr::filter(!is.na(samples_ID)) %>%
   #Remove Buffalo_01 -->i.e. remove 5 lines --> 258 --> 253 raws
-  dplyr::filter(!carcass_ID == 'Buffalo_01')
+  dplyr::filter(!carcass_ID == 'Buffalo_01',
+                predator_species == 'lion')#only select raws with lion data
 
 } #End of function clean_raw_fat_data
 
