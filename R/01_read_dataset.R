@@ -8,7 +8,7 @@
 
 #' Read raw data for fat analyses, from Yolan (after inclusion of collection_interval column)
 #'
-#' @return
+#' @return raw fat dataset
 #' @export
 
 read_fat_data_raw <- function() {

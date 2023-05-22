@@ -9,9 +9,9 @@
 
 #' Clean raw data for fat analyses
 #'
-#' @param fat_data_raw # raw data for fat analyses obtain from the read with read_data function
+#' @param fat_data_raw raw data for fat analyses obtain from the read with read_data function
 #'
-#' @return
+#' @return cleaned fat data
 #' @export
 
 clean_raw_fat_data <- function(fat_data_raw) {
@@ -40,7 +40,7 @@ clean_raw_fat_data <- function(fat_data_raw) {
 #' @param cleaned_data cleaned raw data for fat analyses (after using clean_raw_fat_data function)
 #' @param filename the name we want the dataset to be saved under
 #'
-#' @return
+#' @return save cleaned fat data
 #' @export
 
 save_cleaned_data <- function(cleaned_data,

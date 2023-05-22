@@ -4,6 +4,9 @@
 
 ########################################################################################################################
 
+require(ggplot2)
+
+
 # I Within sample variation (dry mass) ####
 
 #View(fat_data)
@@ -11,7 +14,16 @@
 
 #get coefficient of variation per 'samples_ID'
 
+#' Get coefficient of variation for each samples (i.e. sample_ID)
+#'
+#' @param clean_fat_data : fat data cleaned with 'clean_raw_fat_data' function
+#'
+#' @return table with nb of replicates, mean dry masses, SD dry masses and Coefficient of variation (CV) for each sample(i.e. Sample_ID)
+#' @export
+
 get_CV_dry_mass_table <- function(clean_fat_data){
+
+
 
   CV_dry_mass_table <-
 
@@ -35,6 +47,13 @@ readr::write_csv2(CV_dry_mass_table, file =here::here("output", "data_exploratio
 
 
 
+#' Get boxplots of dry masses for each samples (i.e. sample_ID)
+#'
+#' @param clean_fat_data : fat data cleaned with 'clean_raw_fat_data' function
+#'
+#' @return boxtplots of dry masses ~ sample_ID
+#' @export
+
 get_dry_mass_boxplot <- function(clean_fat_data){
 
 
@@ -46,8 +65,8 @@ get_dry_mass_boxplot <- function(clean_fat_data){
 sample_dry_mass_boxplot <-
 
   clean_fat_data %>%
-  ggplot2::ggplot(aes(x = samples_ID, y= sample_dry_mass, fill = collection_interval)) +
-                    geom_boxplot()+
+  ggplot(aes(x = samples_ID, y= sample_dry_mass, fill = collection_interval)) +
+  geom_boxplot()+
   theme_bw()+
   theme(legend.position = "bottom",
         axis.text.x = (element_text(color ='black',
