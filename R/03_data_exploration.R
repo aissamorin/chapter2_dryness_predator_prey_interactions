@@ -4,67 +4,68 @@
 
 ########################################################################################################################
 
-require(ggplot2)
+#require(ggplot2)
 
 
-# I Within sample variation (dry mass) ####
 
-#View(fat_data)
+# Ia Within sample variation - replicate dry mass ####
 
 
-#get coefficient of variation per 'samples_ID'
-
-#' Get coefficient of variation for each samples (i.e. sample_ID)
+#' Get dry mass coefficient of variation for each samples (i.e. sample_ID)
 #'
 #' @param clean_fat_data : fat data cleaned with 'clean_raw_fat_data' function
+#' @param save whether we want the table to be saved or not
 #'
 #' @return table with nb of replicates, mean dry masses, SD dry masses and Coefficient of variation (CV) for each sample(i.e. Sample_ID)
 #' @export
 
-get_CV_dry_mass_table <- function(clean_fat_data){
+get_CV_dry_mass_table <- function(tab = clean_fat_data,
+                                  save = T){
 
 
 
   CV_dry_mass_table <-
 
-  clean_fat_data %>%
+    tab %>%
 # group by sample ID to get summary stat per sample_ID
   dplyr::group_by(samples_ID) %>%
   dplyr::summarise(nb_sub_samples = dplyr::n(), # number of replicates for each carcass samples
-                   mean_dry_mass = mean(sample_dry_mass),# mean dry mass for each sample
-                   sd_dry_mass = sd(sample_dry_mass)) %>%# standard deviation for each sample
-  dplyr::mutate(CV_dry_mass = sd_dry_mass/mean_dry_mass) # coefficient of variation = sd/mean
+                   mean_dry_mass = mean(sample_dry_mass),# mean dry mass for each sample_ID
+                   sd_dry_mass = sd(sample_dry_mass)) %>%# standard deviation for each sample_ID
+  dplyr::mutate(CV_dry_mass = sd_dry_mass/mean_dry_mass) # coefficient of variation = sd/mean for each sample_ID
 
 #CV < 1 i.e. SD < mean --> relatively low variability ?
 
-  #save table
+  #To save table
+  if(save == TRUE){
 readr::write_csv2(CV_dry_mass_table, file =here::here("output", "data_exploration", "CV_dry_mass_table.csv"))
+}
 
 }
 
 
 # graphical representation
 
-
-
 #' Get boxplots of dry masses for each samples (i.e. sample_ID)
 #'
-#' @param clean_fat_data : fat data cleaned with 'clean_raw_fat_data' function
+#' @param clean_fat_data  fat data cleaned with 'clean_raw_fat_data' function
+#' @param save whether we want the figure to be saved or not
 #'
 #' @return boxtplots of dry masses ~ sample_ID
 #' @export
 
-get_dry_mass_boxplot <- function(clean_fat_data){
+get_dry_mass_boxplot <- function(tab = clean_fat_data,
+                                 save = T){
 
 
-  # Set colors scale
+  # Set color scale
   lbls <- c('early', 'intermediate','late')
   vec_color <- c( "#1f78b4", "#f6c200", "#a50f15")# Yolan color code : blue= <6, Yellow = between 6 and 8 days , red = > 8 days
 
 
 sample_dry_mass_boxplot <-
 
-  clean_fat_data %>%
+  tab %>%
   ggplot(aes(x = samples_ID, y= sample_dry_mass, fill = collection_interval)) +
   geom_boxplot()+
   theme_bw()+
@@ -79,21 +80,425 @@ sample_dry_mass_boxplot <-
   labs(x = "Samples ID",
        y = "Sample dry mass")
 
+
+#To save figure
+if(save == TRUE){
 ggsave(sample_dry_mass_boxplot, file =here::here("output", "data_exploration", "sample_dry_mass_boxplot.jpg"), device = "jpg")
+}
+
 
 }
 
-# II Fat rate ~ Month ####
+
+# Ib Within sample variation - replicate fat rate ####
+
+#get fat rate coefficient of variation (for each sample_ID)
+
+#' Get fat rate coefficient of variation for each samples (i.e. per sample_ID)
+#'
+#' @param tab fat data cleaned with 'clean_raw_fat_data' function, default is clean_fat_data
+#' @param save whether we want the table to be saved or not
+#'
+#' @return return a table with the nb of replicates, mean fat rate, SD fat rate and Coefficient of variation (CV) for each sample(i.e. Sample_ID)
+#' @export
+
+get_CV_fat_rate_table <- function(tab = clean_fat_data,
+                                  save = T){
+
+
+CV_fat_rate_table <-
+
+  tab %>%
+  dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass) %>%
+
+  # group by sample ID to get summary stat per sample_ID
+  dplyr::group_by(samples_ID) %>%
+  dplyr::summarise(nb_sub_samples = dplyr::n(), # number of replicates for each carcass samples
+                   mean_fat_rate = mean(sample_replicate_fat_rate),# mean fat rate for each sample_ID
+                   sd_fat_rate = sd(sample_replicate_fat_rate)) %>%# fat rate standard deviation for each sample_ID
+  dplyr::mutate(CV_fat_rate = sd_fat_rate/mean_fat_rate) # coefficient of variation = sd/mean for each sample ID
+
+
+if(save == TRUE){
+#save table
+readr::write_csv2(CV_fat_rate_table, file =here::here("output", "data_exploration", "CV_fat_rate_table.csv"))
+}
+
+
+}
+
+
+#graphical representation
+
+#' Get boxplots of fat rates for each samples (i.e. sample_ID)
+#'
+#' @param tab fat data cleaned with 'clean_raw_fat_data' function, default is clean_fat_data
+#' @param save whether we want the figure to be saved or not
+#'
+#' @return boxtplots of fat rates as a function of/for each sample_ID
+#' @export
+
+get_fat_rate_boxplot <- function(tab = clean_fat_data,
+                                 save =  TRUE){
+
+
+# Set colors scale
+lbls <- c('early', 'intermediate','late')
+vec_color <- c( "#1f78b4", "#f6c200", "#a50f15")# Yolan color code : blue= <6, Yellow = between 6 and 8 days , red = > 8 days
+
+
+fat_rate_CV_boxplot <-
+
+tab %>%
+  # computes fate rate for each repclicate (--> will give several values for each sample ID )
+  dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass) %>%
+
+#ggplot boxplot
+ggplot(aes(x = samples_ID, y= sample_replicate_fat_rate, fill = collection_interval)) +
+  geom_boxplot()+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        axis.text.x = (element_text(color ='black',
+                                    angle = 45,
+                                    hjust = 1,
+                                    size = 6) ))+
+  scale_fill_manual( name = "Collection date :",
+                     labels = c('< 6 days', 'between 6 and 8 days', '>8 days'),
+                     values = setNames(vec_color, lbls)) +
+  labs(x = "Samples ID",
+       y = "Replicate fat rate")
+
+#To save figure
+if(save == TRUE){
+ggsave(fat_rate_CV_boxplot, file =here::here("output", "data_exploration", "fat_rate_CV_boxplot.jpg"), device = "jpg")
+}
+
+
+}
+
+
+
+# --------------------------------------------------------------------------------------------------------------#
+
+
+# II Fat rate analyses ####
 
 #> "Gold standard" data ####
-# adult and indiv only, bones collected before 6 days
 
 
-# clean_fat_data %>%
-#   # selection of row for adult and indiv only & bones collected before 6 days
-#   dplyr::filter(collection_interval == 'early',
-#                 age == c('old', 'adult'))
+#>> data preparation ####
 
+#' Get 'gold standard' data, i.e. keep adult and old individuals only, with bones collected before 6 days
+#'
+#' @param tab table containing (cleaned) fat data, default = clean_fat_data
+#' @param save whether we want the table to be saved, default = FALSE
+#'
+#' @return return a table
+#' @export
+
+get_gs_data <- function(tab = clean_fat_data,
+                        save = FALSE){
+
+
+
+gs_data <-
+
+  tab %>%
+  # keep only rows with  adult and old indiv & bones collected before 6 days
+  dplyr::filter(collection_interval == 'early',
+                age %in% c('old', 'adult')) %>%
+  #Select columns of interest
+  dplyr::select(samples_ID,
+                cluster_start_date,
+                collection_interval,
+                predator_species,
+                carcass_species,
+                sex,
+                age,
+                bone_type,
+                sample_wet_mass,
+                sample_dry_mass) %>%
+
+  dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass,# compute fat rate
+                cluster_month = lubridate::month(cluster_start_date), #get the month the prey was killed (?)
+                #compute season from cluster_month
+                season1 = dplyr::if_else(cluster_month %in% c(1:6),# early_dry: 1-6, dry: 7-12
+                                         'early_dry',
+                                         'dry'),
+                season2 = dplyr::if_else(cluster_month %in% c(1:7),# early_dry: 1-7, dry: 7-12
+                                         'early_dry',
+                                         'dry')) %>%
+  #change factor level orger (for graphical presentation purpose) from 1.dry 2.early-dry to 1.early_dry  2.dry
+  dplyr::mutate(season1 = forcats::fct(season1,levels = c("early_dry","dry")),
+                season2 = forcats::fct(season2,levels = c("early_dry","dry")))
+
+
+
+if(save == TRUE){
+
+  #To save gs_data table
+  readr::write_csv2(gs_data, file =here::here("output", "data_exploration", "gs_data_table.csv"))
+
+}
+
+return(gs_data)
+
+}
+
+
+
+# gs_data %>%
+#   dplyr::group_by(carcass_species) %>%
+#   dplyr::summarise(dplyr::n_distinct(samples_ID))
+
+
+#>> Carcass number summary table  ####
+
+#' Get carcass number summary table
+#'
+#' @param tab the table with fat data
+#' @param ... variable/column we want to group by i.e. get the number of carcasses (sample size) per (e.g.) per cluster_month, season or species
+#'
+#' @return return a table with the number of carcasses for each variable of choice
+#' @export
+#'
+get_nb_carcass_table <- function(tab,
+                                 ...){
+
+
+
+  tab %>%
+    #group by the variable for which to count the number of carcasses/sample size must be counted
+    dplyr::group_by(...) %>%
+    # count
+    dplyr::summarise(dplyr::n_distinct(samples_ID)) %>% # to count the number of carcasses which are coded with a distinct sample_ID
+    # rename the count column
+    dplyr::rename(Count = `dplyr::n_distinct(samples_ID)`)
+
+}
+
+
+#>> BOXPLOTS ####
+
+
+#  boxplots of fat rate values (not mean) as a function of cluster_month
+
+# Across all species
+
+
+#' Get boxplots of fate rate value or mean fat rate as a function of cluster_month or season, all species together
+#'
+#' @param tab the table with fat data
+#' @param varx explanatory variable (e.g. cluster_month, season1, season 2,...), character string !
+#' @param vary variable to be explained (?, eg. sample_replicate_fat_rate, mean_fat_rate), character string !
+#'
+#' @return return a boxplot figure of the variable to explain ~ explanatory variable
+#' @export
+
+boxplot_all_sp <- function(tab, varx, vary){
+
+  #Args to run function :
+  # tab<- gs_data
+  # vary <- 'sample_replicate_fat_rate'
+  # varx <- 'cluster_month'
+
+
+  tab %>%
+    ggplot(aes(x = as.factor(.data[[varx]]), y = .data[[vary]])) + # must index the '.data' with '[[varX]]' the env-variable is a character vector (& because of tidyverse data masking
+    geom_boxplot()+
+    theme_bw()+
+    theme(legend.position = "bottom",
+          axis.text.x = (element_text(color ='black'))) +
+    labs(x = varx,
+         y = vary)
+
+#save the above plot
+  ggsave(filename = paste({{vary}},'per',{{varx}},'all_sp.jpg', sep ='_'), # filename : vary_per_varx_all_sp
+         device = 'jpg',
+         path = here::here("output", "data_exploration"))
+
+
+
+}
+
+
+#' Get boxplots of fate rate value or mean fat rate as a function of cluster_month or season, for a subset of species
+#'
+#' @param tab the table with fat data
+#' @param varx explanatory variable (e.g. cluster_month, season1, season 2,...), character string !
+#' @param vary variable to be explained (?, eg. sample_replicate_fat_rate, mean_fat_rate), character string !
+#' @param species_vec vector of species of interest, default = c('buffalo', 'nyala', 'warthog')
+#'
+#' @return return a boxplot figure of the variable to explain ~ explanatory variable facetted by carcass_species
+#' @export
+
+boxplot_main_sp <- function(tab,
+                            varx,
+                            vary,
+                            species_vec = c('buffalo', 'nyala', 'warthog')){
+
+
+
+  #Args to run function :
+  # tab<- gs_data
+  # vary <- 'sample_replicate_fat_rate'
+  # varx <- 'cluster_month'
+  # species_vec <- c('buffalo', 'nyala', 'warthog')
+
+
+   tab %>%
+    dplyr::filter(carcass_species %in% species_vec) %>%
+    # must index the '.data' with '[[varX]]' the env-variable is a character vector (& because of tidyverse data masking
+    ggplot(aes(x = as.factor(.data[[varx]]), y = .data[[vary]])) +
+    geom_boxplot()+
+    facet_wrap(~carcass_species) + #facet by carcass_species
+    theme_bw()+
+    theme(legend.position = "bottom",
+          axis.text.x = (element_text(color ='black'))) +
+    labs(x = varx,
+         y = vary)
+
+  #To save the above plot
+  ggsave(filename = paste({{vary}},'per',{{varx}},paste({{species_vec}}, collapse = "_"),'.jpg', sep ='_'),
+         device = 'jpg',
+         path = here::here("output", "data_exploration"))
+
+
+
+}
+
+
+
+
+#-------------------------------------------------------------------------------------------------------------#
+
+
+
+
+# > Larger sample analyses ####
+# sub-adult, adult & old individuals, with bones collected before 6 days and within 6 to 8 days
+
+
+#########################################################################################################################################################
+######################################## DRAFT ##################################################################
+##################################################################################################################
+
+
+
+# # per month
+#
+# nb_sample_per_month <-
+#
+#   gs_data %>%
+#   dplyr::group_by(cluster_month) %>%
+#   dplyr::summarise(dplyr::n())
+
+# per season1
+
+# nb_sample_per_season1 <-
+#
+#   gs_data %>%
+#   dplyr::group_by(season1) %>%
+#   dplyr::summarise(dplyr::n())
+#
+#
+# # per season2
+#
+# nb_sample_per_season2 <-
+#
+#   gs_data %>%
+#   dplyr::group_by(season2) %>%
+#   dplyr::summarise(dplyr::n())
+#
+# # per species
+#
+# nb_sample_per_species <-
+#
+#   gs_data %>%
+#   dplyr::group_by(carcass_species) %>%
+#   dplyr::summarise(dplyr::n())
+#
+# readr::write_csv2(nb_sample_per_species, file =here::here("output", "data_exploration", "nb_sample_per_species.csv"))
+#
+# # species with the most samples: Buffalo, Nyala & Warthog
+#
+# # per species & season 1
+#
+# nb_sample_per_species <-
+#
+#   gs_data %>%
+#   dplyr::group_by(carcass_species, season1) %>%
+#   dplyr::summarise(dplyr::n())
+#
+# # per species & season 2
+#
+# nb_sample_per_species <-
+#
+#   gs_data %>%
+#   dplyr::group_by(carcass_species, season2) %>%
+#   dplyr::summarise(dplyr::n())
+
+
+# Boxplot
+# sample_fat_rate_month <- gs_data %>%
+#   ggplot(aes(x = as.factor(cluster_month), y= sample_replicate_fat_rate)) +
+#   geom_boxplot() %>%
+#
+# ggsave(sample_fat_rate_month, file =here::here("output", "data_exploration", "sample_fat_rate_month_boxplot.jpg"), device = "jpg")
+
+
+
+###
+
+#per main species, i.e. 'buffalo', 'nyala', 'warthog'
+# sample_fat_rate_month_species <-
+#
+#   gs_data %>%
+#   dplyr::filter(carcass_species %in% c('buffalo', 'nyala', 'warthog')) %>%
+#
+#   ggplot(aes(x = as.factor(cluster_month), y = sample_replicate_fat_rate)) +
+#   geom_boxplot()+
+#   facet_wrap(~carcass_species)
+#
+# ggsave(sample_fat_rate_month_species, file =here::here("output", "data_exploration", "sample_fat_rate_month_boxplot_species.jpg"), device = "jpg")
+
+
+# boxplots of mean fat rate as a function of cluster_month
+
+# data
+
+# #gs_data_mean <-
+#
+#   gs_data %>%
+#   dplyr::group_by(samples_ID, cluster_start_date, cluster_month, carcass_species ) %>%
+#   dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+#
+#   boxplot_main_sp( tab = .,
+#                   varx= 'cluster_month',
+#                   vary= 'mean_fat_rate',
+#                   species_vec)
+#
+#
+# # all species
+# mean_fat_rate_month <-
+#
+# temp_data_mean %>%
+#   ggplot(aes(x = as.factor(cluster_month), y= mean_fat_rate)) +
+#   geom_boxplot()
+#
+# ggsave(mean_fat_rate_month, file =here::here("output", "data_exploration", "mean_fat_rate_month_boxplot.jpg"), device = "jpg")
+#
+#
+# # main species i.e. 'buffalo', 'nyala', 'warthog'
+# mean_fat_rate_month_species <- temp_data_mean %>%
+#   dplyr::filter(carcass_species %in% c('buffalo', 'nyala', 'warthog')) %>%
+#
+#   ggplot(aes(x = as.factor(cluster_month), y = mean_fat_rate)) +
+#   geom_boxplot()+
+#   facet_wrap(~carcass_species)
+#
+# ggsave(mean_fat_rate_month_species, file =here::here("output", "data_exploration", "mean_fat_rate_month_boxplot_species.jpg"), device = "jpg")
+#
 
 
 
