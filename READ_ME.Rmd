@@ -10,15 +10,15 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, 
+knitr::opts_chunk$set(echo = FALSE, 
                       message = FALSE, 
                       warning = FALSE) 
-                      # cache = FALSE) 
+                    # cache = FALSE) 
 ```
 
 ```{r}
 
-library(kableExtra)
+require(kableExtra)
 require(tidyverse)
 require(here)
 require(ggplot2)
@@ -44,6 +44,19 @@ __Read data__
 
 use function 'read_fat_data_raw()' to read csv file with raw fat data from Yolan
 
+```{r}
+# Load functions and deps ?
+devtools::load_all()
+
+#DATA PREPARATION ####
+
+# Read data fat analyses raw dataset
+
+fat_data_raw <- read_fat_data_raw()
+
+```
+
+
 __Clean dataset__
 
 Aim at cleaning, organising and only keep necessary info from fat raw data using the function 'clean_raw_fat_data'
@@ -57,44 +70,73 @@ The function :
 + removes raws corresponding to Buffalo_01 --> a test sample that wasn't harvested following the study design (but opportunistically) and  must, thus, be excluded because it wasn't
 + removes raws corresponding to hyena's data or with no information on predator species (NA)
 
-__Save cleaned dataset__
+The function include an option to save the cleaned dataset, the user must specified 'save = TRUE', and the filename under which the file must be saved. The cleaned dataset is saved under ./output/clean_fat_data/ 
 
-Aim at saving cleaned data for fat analyses 'save_cleaned_data'
 
-The function takes 2 arguments :   
+```{r}
 
-+  _cleaned_data_ : cleaned raw data for fat analyses (after using clean_raw_fat_data function)
-+ _filename_ : the name we want the dataset to be saved under
+clean_fat_data <- clean_raw_fat_data(fat_data_raw,
+                                     save = F,
+                                     filename = 'cleaned_fat_data')
+```
 
-The cleaned dataset is saved under ./output/clean_fat_data/ 
 
-<br>
-<br>
+<!-- __Save cleaned dataset__ -->
+
+<!-- Aim at saving cleaned data for fat analyses 'save_cleaned_data' -->
+
+<!-- The function takes 2 arguments :    -->
+
+<!-- +  _cleaned_data_ : cleaned raw data for fat analyses (after using clean_raw_fat_data function) -->
+<!-- + _filename_ : the name we want the dataset to be saved under -->
+
+<!-- The cleaned dataset is saved under ./output/clean_fat_data/  -->
+
+<!-- <br> -->
+<!-- <br> -->
 
 ## Data Exploration 
 <br>
 
-__Within samples variation__
+### __I Within sample variability__
 
 <br>
 
-Graphical representation of the spread/distribution of dry-mass values for each sample (Hip_B_...etc)
-<br>
-```{r, echo=FALSE, out.width="100%",fig.align = 'center', fig.cap="Survey map"}
+Across all species, and conditions. 
 
-knitr::include_graphics(here::here("output","data_exploration","sample_dry_mass_boxplot.jpg"))
+
+<br>
+
+#### A)  Replicate's dry mass 
+
+
+
+<br> 
+
+Graphical representation of the spread/distribution of dry-mass values for each sample (i.e. sample_ID: Hip_B_...etc)
+Each boxplots represent the up to five dry masses values obtained for each carcass
+
+<br>
+
+```{r, echo=FALSE, out.width="100%", fig.align = 'center'}
+
+get_dry_mass_boxplot(tab = clean_fat_data,
+                     save = F)
+
 
 ```
-<br>
+
 <br>
 
-Table with coefficients of variation calculated per sample
-<br>
+Table with coefficients of variation calculated per sample_ID
+Mean, sd and CV are calculated from the up to five dry mass values from each carcasses (<=> sample_ID) 
+
 <br>
 
 ```{r, echo = FALSE}
 
-readr::read_csv2(here::here("output","data_exploration", "CV_dry_mass_table.csv")) %>% 
+ get_CV_dry_mass_table(clean_fat_data,
+                       save = F) %>% 
  kableExtra::kbl() %>% 
    kableExtra::kable_styling() %>% 
    kableExtra::scroll_box(width = "100%", height = "250px")
@@ -103,5 +145,369 @@ readr::read_csv2(here::here("output","data_exploration", "CV_dry_mass_table.csv"
 ```
 
 <br>
-CV < 1 i.e. SD < mean --> relatively low variability ?
-https://statisticsbyjim.com/basics/coefficient-variation/ 
+
+CV < 1 i.e. SD < mean --> relatively low variability ? (cf https://statisticsbyjim.com/basics/coefficient-variation/ )
+
+<br>
+
+#### B)  Replicate's fat rate 
+
+
+<br> 
+
+Graphical representation of the spread/distribution of fat rate values for each sample (i.e. sample_ID: Hip_B_...etc)
+The fat rate was calculated as follows : 
+
+$$\frac{Sd}{Mean}$$
+for each replicates (i.e. each raw in the original table & there are as many fat-rate values as there are of replicated per sample_ID)
+
+<br>
+
+```{r}
+get_fat_rate_boxplot(clean_fat_data,
+                     save =  F)
+```
+<br>
+<br>
+
+Table with coefficients of variation calculated per sample_ID
+<br>
+
+<br>
+
+```{r}
+ get_CV_fat_rate_table(clean_fat_data,
+                       save = F)%>% 
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling() %>% 
+   kableExtra::scroll_box(width = "100%", height = "250px")
+```
+
+<br>
+<br>
+
+### __II Fat rate analyses__
+
+<br>
+<br>
+
+#### A) 'Gold standard' analyses ####
+
+<br>
+
+```{r}
+#> data preparation ####
+
+gs_data <- get_gs_data(clean_fat_data)
+
+```
+
+##### Carcass number summary tables 
+
+<br> 
+
+Number of carcasses (i.e. sample ID) per species, month (cluster_month), season, and season & species
+
+<br> 
+
+_Per species_
+
+<br> 
+
+```{r}
+get_nb_carcass_table(gs_data,
+                    carcass_species) %>% 
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling()
+```
+
+_Per cluster_month_
+
+<br> 
+
+```{r}
+get_nb_carcass_table(gs_data,
+                     cluster_month) %>% 
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling()
+
+```
+
+_Per species & cluster_month_
+
+<br> 
+
+```{r}
+#per specie & per month
+get_nb_carcass_table(gs_data,
+                     carcass_species,cluster_month) %>% #... = cluster_month
+kableExtra::kbl() %>% 
+   kableExtra::kable_styling() %>% 
+   kableExtra::scroll_box(width = "100%", height = "250px") 
+
+```
+
+
+<br>
+<br>
+
+***
+
+Following discussion with Marion, I have tested for 2 ways of dividing season  
+
++ __season 1__: early_dry (season): 1-6, dry (season): 7-12 , or
++ __season 2__: early_dry : 1-7, dry: 7-12 
+
+***
+<br>
+<br>
+
+_Per Season 1_
+
+<br> 
+
+```{r}
+get_nb_carcass_table(gs_data,
+                     season1) %>% 
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling()
+
+```
+
+_Per Season 2_
+
+<br> 
+
+```{r}
+#per season 2
+get_nb_carcass_table(gs_data,
+                     season2)  %>% 
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling()
+```
+
+
+_Per species & season 1_
+
+<br> 
+
+```{r}
+#per species & season 1
+get_nb_carcass_table(gs_data,
+                     carcass_species,season1) %>% #... = carcass_species, season1
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling() %>% 
+   kableExtra::scroll_box(width = "100%", height = "250px") 
+
+```
+
+_Per species and season 2_
+
+<br> 
+
+```{r}
+#per species & season 2
+get_nb_carcass_table(gs_data,
+                     carcass_species,season2) %>% #... = carcass_species, season1
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling() %>% 
+   kableExtra::scroll_box(width = "100%", height = "250px") 
+```
+
+<br> 
+
+Since it seems that season 1 allows for more balanced categories, and their is no difference for the number of carcasses per species per season1/season 2, I'll use a the 'season 1' way to divide the year afterwards
+
+<br> 
+<br> 
+
+##### Graphical representation (Boxplots)
+
+<br> 
+
+***
+
+For analyses below
+
++ The fat rate values of each replicates (i.e. each raw in the original table :  there are as many fat-rate values as there are of replicates per sample_ID - i.e. up to 5)
++ The mean fat rate is computed over the (up to) 5 replicates per sample, so we have one value per sample_ID. 
++ When looking at species of interest, I only kept the species with the highest number of carcasses + carcasses in both season / over several months
+
+***
+
+<br> 
+
+###### _Per month_  
+
+<br>
+
+__Fat rate as a function of month (cluster_month), all species__
+
+<br>
+
+
+```{r, echo=FALSE, out.width="100%",fig.align = 'center'}
+
+boxplot_all_sp (tab = gs_data,
+                varx = 'cluster_month' ,
+                vary = 'sample_replicate_fat_rate' )
+
+```
+
+<br>
+
+__Fat rate as a function of month (cluster_month), Buffalo, Nyala & Warthog__
+
+<br>
+
+
+```{r}
+
+boxplot_main_sp(tab = gs_data,
+                            varx = 'cluster_month' ,
+                            vary ='sample_replicate_fat_rate',
+                            species_vec = c('buffalo', 'nyala', 'warthog')) 
+
+
+```
+
+
+<br>
+
+__Mean fat rate as a function of month (cluster_month), (replicate level), all species__
+
+<br>
+
+
+```{r, echo=FALSE, out.width="100%",fig.align = 'center'}
+
+# data preparation, compute the mean fat rate per sample_ID & per species
+gs_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+
+  boxplot_all_sp (tab = .,
+                  varx = 'cluster_month' ,
+                  vary = 'mean_fat_rate' )
+
+```
+
+<br>
+
+__Mean fat rate as a function of month (cluster_month), (replicate level), Buffalo, Nyala & Warthog__
+
+<br>
+
+```{r, echo=FALSE, out.width="100%",fig.align = 'center'}
+
+# data preparation, compute the mean fat rate per sample_ID & per species
+gs_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, carcass_species ) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+  #dplyr::filter(carcass_species %in% c('buffalo', 'nyala', 'warthog')) %>%
+
+  boxplot_main_sp( tab = .,
+                   varx= 'cluster_month',
+                   vary= 'mean_fat_rate',
+                   species_vec = c('buffalo', 'nyala', 'warthog'))
+
+```
+
+
+###### _Per season_ 
+
+<br>
+
+Since season 1 is more balanced than season 2, I use 'season1' (early_dry: 1-6, dry : 7-12)
+
+<br>
+
+__Fat rate as a function of season 1, all species__
+
+```{r}
+
+#fat rate value ~ season1 (early dry = 2-6 & dry = 7-11), all sp
+
+boxplot_all_sp (tab = gs_data,
+                varx = 'season1' ,
+                vary = 'sample_replicate_fat_rate' )
+
+
+```
+
+<br>
+
+__Fat rate as a function of season 1, Buffalo, Nyala & Warthog__
+
+<br>
+
+
+```{r}
+# fat rate value ~ season1 (early dry = 2-6 & dry = 7-11), main sp
+
+boxplot_main_sp(tab = gs_data,
+                varx = 'season1' ,
+                vary ='sample_replicate_fat_rate',
+                species_vec = c('buffalo', 'nyala', 'warthog'))
+
+```
+
+<br>
+
+__Mean fat rate as a function of season 1, all species__
+
+<br>
+
+```{r}
+# mean fat rate ~ season 1 all sp
+
+# data preparation, compute the mean fat rate per sample_ID & per season1
+gs_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, season1) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+
+  boxplot_all_sp (tab = .,
+                  varx = 'season1' ,
+                  vary = 'mean_fat_rate' )
+
+```
+
+<br>
+
+__Mean fat rate as a function of season 1, Buffalo, Nyala & Warthog__
+
+<br>
+
+```{r}
+# mean fat rate ~ season 1 main sp
+
+# data preparation, compute the mean fat rate per sample_ID, per season1 & per species
+
+gs_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, carcass_species, season1 ) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+  dplyr::filter(carcass_species %in% c('buffalo', 'nyala', 'warthog')) %>%
+
+  boxplot_main_sp( tab = .,
+                   varx= 'season1',
+                   vary= 'mean_fat_rate',
+                   species_vec = c('buffalo', 'nyala', 'warthog'))
+
+```
+
+##### Statistical Analyses (ANOVA)
+
+
+
+#### B) Larger sample analyses
+
+<br>
+
+Include sub-adult in addition to adult & old individuals, with bones collected before 6 days and within 6 to 8 days
+
+<br>
+
+
+### __III Body condition analyses__
+
+
