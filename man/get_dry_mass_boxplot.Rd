@@ -4,10 +4,12 @@
 \alias{get_dry_mass_boxplot}
 \title{Get boxplots of dry masses for each samples (i.e. sample_ID)}
 \usage{
-get_dry_mass_boxplot(clean_fat_data)
+get_dry_mass_boxplot(tab = clean_fat_data, save = T)
 }
 \arguments{
-\item{clean_fat_data}{: fat data cleaned with 'clean_raw_fat_data' function}
+\item{save}{whether we want the figure to be saved or not}
+
+\item{clean_fat_data}{fat data cleaned with 'clean_raw_fat_data' function}
 }
 \value{
 boxtplots of dry masses ~ sample_ID

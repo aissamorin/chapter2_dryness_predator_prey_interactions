@@ -2,16 +2,18 @@
 % Please edit documentation in R/03_data_exploration.R
 \name{get_CV_dry_mass_table}
 \alias{get_CV_dry_mass_table}
-\title{Get coefficient of variation for each samples (i.e. sample_ID)}
+\title{Get dry mass coefficient of variation for each samples (i.e. sample_ID)}
 \usage{
-get_CV_dry_mass_table(clean_fat_data)
+get_CV_dry_mass_table(tab = clean_fat_data, save = T)
 }
 \arguments{
+\item{save}{whether we want the table to be saved or not}
+
 \item{clean_fat_data}{: fat data cleaned with 'clean_raw_fat_data' function}
 }
 \value{
 table with nb of replicates, mean dry masses, SD dry masses and Coefficient of variation (CV) for each sample(i.e. Sample_ID)
 }
 \description{
-Get coefficient of variation for each samples (i.e. sample_ID)
+Get dry mass coefficient of variation for each samples (i.e. sample_ID)
 }
