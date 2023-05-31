@@ -41,6 +41,8 @@ get_CV_dry_mass_table <- function(tab = clean_fat_data,
 readr::write_csv2(CV_dry_mass_table, file =here::here("output", "data_exploration", "CV_dry_mass_table.csv"))
 }
 
+  CV_dry_mass_table
+
 }
 
 
@@ -86,6 +88,7 @@ if(save == TRUE){
 ggsave(sample_dry_mass_boxplot, file =here::here("output", "data_exploration", "sample_dry_mass_boxplot.jpg"), device = "jpg")
 }
 
+sample_dry_mass_boxplot
 
 }
 
@@ -124,6 +127,8 @@ if(save == TRUE){
 readr::write_csv2(CV_fat_rate_table, file =here::here("output", "data_exploration", "CV_fat_rate_table.csv"))
 }
 
+#return
+CV_fat_rate_table
 
 }
 
@@ -173,6 +178,8 @@ if(save == TRUE){
 ggsave(fat_rate_CV_boxplot, file =here::here("output", "data_exploration", "fat_rate_CV_boxplot.jpg"), device = "jpg")
 }
 
+# return
+fat_rate_CV_boxplot
 
 }
 
@@ -303,7 +310,8 @@ boxplot_all_sp <- function(tab, varx, vary){
   # varx <- 'cluster_month'
 
 
-  tab %>%
+
+ bp <-  tab %>%
     ggplot(aes(x = as.factor(.data[[varx]]), y = .data[[vary]])) + # must index the '.data' with '[[varX]]' the env-variable is a character vector (& because of tidyverse data masking
     geom_boxplot()+
     theme_bw()+
@@ -312,11 +320,16 @@ boxplot_all_sp <- function(tab, varx, vary){
     labs(x = varx,
          y = vary)
 
+
+
 #save the above plot
-  ggsave(filename = paste({{vary}},'per',{{varx}},'all_sp.jpg', sep ='_'), # filename : vary_per_varx_all_sp
+
+  ggsave(
+         filename = paste({{vary}},'per',{{varx}},'all_sp.jpg', sep ='_'), # filename : vary_per_varx_all_sp
          device = 'jpg',
          path = here::here("output", "data_exploration"))
 
+  bp
 
 
 }
@@ -346,7 +359,7 @@ boxplot_main_sp <- function(tab,
   # species_vec <- c('buffalo', 'nyala', 'warthog')
 
 
-   tab %>%
+  bp <-  tab %>%
     dplyr::filter(carcass_species %in% species_vec) %>%
     # must index the '.data' with '[[varX]]' the env-variable is a character vector (& because of tidyverse data masking
     ggplot(aes(x = as.factor(.data[[varx]]), y = .data[[vary]])) +
@@ -363,7 +376,7 @@ boxplot_main_sp <- function(tab,
          device = 'jpg',
          path = here::here("output", "data_exploration"))
 
-
+  bp
 
 }
 
