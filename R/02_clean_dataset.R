@@ -39,6 +39,8 @@ clean_raw_fat_data <- function(fat_data_raw,
     readr::write_csv2(fat_data_raw, here::here(paste("output/clean_fat_data/", filename,".csv",  sep ="")))
   }
 
+  fat_data_raw
+
 } #End of function clean_raw_fat_data
 
 
