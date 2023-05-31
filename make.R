@@ -16,10 +16,6 @@ clean_fat_data <- clean_raw_fat_data(fat_data_raw,
                                      save = TRUE,
                                      filename = 'cleaned_fat_data')
 
-# Save clean data
-
-# save_cleaned_data(fat_data,
-#                   'cleaned_fat_data')
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------#
@@ -72,6 +68,10 @@ get_nb_carcass_table(gs_data,
 #per cluster month
 get_nb_carcass_table(gs_data,
                      cluster_month) #... = cluster_month
+
+#per specie & per month
+get_nb_carcass_table(gs_data,
+                     carcass_species,cluster_month) #... = cluster_month
 
 #per season 1
 get_nb_carcass_table(gs_data,
