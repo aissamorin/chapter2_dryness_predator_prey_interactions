@@ -4,13 +4,17 @@
 \alias{clean_raw_fat_data}
 \title{Clean raw data for fat analyses}
 \usage{
-clean_raw_fat_data(fat_data_raw)
+clean_raw_fat_data(fat_data_raw, save = FALSE, filename = cleaned_fat_data)
 }
 \arguments{
 \item{fat_data_raw}{raw data for fat analyses obtain from the read with read_data function}
+
+\item{save}{whether we want the output to be save or not, default is FALSE}
+
+\item{filename}{the name we want the dataset to be saved under, default name is 'cleaned_fat_data'}
 }
 \value{
-cleaned fat data
+cleaned fat data and eventually saved the dataset
 }
 \description{
 Clean raw data for fat analyses

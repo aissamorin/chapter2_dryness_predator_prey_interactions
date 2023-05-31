@@ -10,11 +10,15 @@
 #' Clean raw data for fat analyses
 #'
 #' @param fat_data_raw raw data for fat analyses obtain from the read with read_data function
+#' @param save whether we want the output to be save or not, default is FALSE
+#' @param filename the name we want the dataset to be saved under, default name is 'cleaned_fat_data'
 #'
-#' @return cleaned fat data
+#' @return cleaned fat data and eventually saved the dataset
 #' @export
 
-clean_raw_fat_data <- function(fat_data_raw) {
+clean_raw_fat_data <- function(fat_data_raw,
+                               save = FALSE,
+                               filename = cleaned_fat_data) {
 
  fat_data_raw %>%
   # remove all 'mass_j1, 'mass_j2' etc... columns '\\d+$' = any number suits
@@ -30,25 +34,30 @@ clean_raw_fat_data <- function(fat_data_raw) {
   dplyr::filter(!carcass_ID == 'Buffalo_01',
                 predator_species == 'lion')#only select raws with lion data
 
+  if (save == TRUE) {
+
+    readr::write_csv2(fat_data_raw, here::here(paste("output/clean_fat_data/", filename,".csv",  sep ="")))
+  }
+
 } #End of function clean_raw_fat_data
 
 
 # Save cleaned data for fat analyses ####
 
 
-#' Save cleaned data for fat analyses
+#' #' Save cleaned data for fat analyses
+#' #'
+#' #' @param cleaned_data cleaned raw data for fat analyses (after using clean_raw_fat_data function)
+#' #' @param filename the name we want the dataset to be saved under
+#' #'
+#' #' @return save cleaned fat data
+#' #' @export
 #'
-#' @param cleaned_data cleaned raw data for fat analyses (after using clean_raw_fat_data function)
-#' @param filename the name we want the dataset to be saved under
+#' save_cleaned_data <- function(cleaned_data,
+#'                               filename){
 #'
-#' @return save cleaned fat data
-#' @export
-
-save_cleaned_data <- function(cleaned_data,
-                              filename){
-
-readr::write_csv2(cleaned_data, here::here(paste("output/clean_fat_data/", filename,".csv",  sep ="")))
-
-}
+#' readr::write_csv2(cleaned_data, here::here(paste("output/clean_fat_data/", filename,".csv",  sep ="")))
+#'
+#' }
 
 
