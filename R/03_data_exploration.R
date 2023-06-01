@@ -392,6 +392,150 @@ boxplot_main_sp <- function(tab,
 # sub-adult, adult & old individuals, with bones collected before 6 days and within 6 to 8 days
 
 
+# III Body condition analyses ####
+
+#> Gold standard data ####
+
+#>> Data preparation ####
+
+get_body_condition_data_gs <- function(tab = clean_fat_data,
+                                       save = FALSE){
+
+bc_data_gs <-
+
+  tab %>%
+  # keep only rows with  adult and old indiv & bones collected before 6 days
+  dplyr::filter(collection_interval == 'early',
+                age %in% c('old', 'adult')) %>%
+  #Select columns of interest
+  dplyr::select(samples_ID,
+                cluster_start_date,
+                collection_interval,
+                predator_species,
+                carcass_species,
+                sex,
+                age,
+                bone_type,
+                sample_wet_mass,
+                sample_dry_mass) %>%
+
+  dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass,# compute fat rate
+                cluster_month = lubridate::month(cluster_start_date), #get the month the prey was killed (?)
+                #compute season from cluster_month
+                season1 = dplyr::if_else(cluster_month %in% c(1:6),# early_dry: 1-6, dry: 7-12
+                                         'early_dry',
+                                         'dry')) %>%
+  #change factor level orger (for graphical presentation purpose) from 1.dry 2.early-dry to 1.early_dry  2.dry
+  dplyr::mutate(season1 = forcats::fct(season1,levels = c("early_dry","dry"))) %>%
+  # compute mean fat rate
+                  dplyr::group_by(samples_ID,
+                                  cluster_start_date,
+                                  collection_interval,
+                                  predator_species,
+                                  carcass_species,
+                                  sex,
+                                  age,
+                                  bone_type,
+                                  cluster_month,
+                                  season1) %>%
+                  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+
+  dplyr::mutate(body_condition = dplyr::if_else(mean_fat_rate < 0.2,
+                                                'emaciated',
+                                                dplyr::if_else(mean_fat_rate >0.20 & mean_fat_rate <0.70,
+                                                        'thin',
+                                                        'good'))) %>%
+  #change factor level orger (for graphical presentation purpose) from 1.dry 2.early-dry to 1.early_dry  2.dry
+  dplyr::mutate(body_condition = forcats::fct(body_condition,levels = c("emaciated","thin","good")))
+
+if(save == TRUE){
+
+  #To save gs_data table
+  readr::write_csv2(bc_data_gs, file =here::here("output", "data_exploration", "bodycondi_data_gs_table.csv"))
+
+}
+
+return(bc_data_gs)
+
+}
+
+# >> Boxplots ####
+
+bc_season_bp_op1 <- function(tab,
+                        save = FALSE){
+
+# option 1
+# Set color scale
+lbls1 <- c('emaciated', 'thin','good')
+vec_color1 <- c( "#a50f15", "#ebc174", "#79ad41")
+
+
+
+bp <-
+
+  tab %>%
+  ggplot2::ggplot(aes(x = body_condition, fill = body_condition))+
+  geom_bar()+
+  facet_wrap(~season1)+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        axis.text.x = (element_text(color ='black')))+
+  scale_fill_manual( name = "Body condition :",
+                     labels = c('Emaciated', 'Thin', 'Good'),
+                     values = setNames(vec_color1, lbls1)) +
+  labs(x = "")
+
+if(save == TRUE){
+ggsave(bp, file =here::here("output", "data_exploration", "boxplot_bc_face(season)_op1.jpg"), device = "jpg")
+}
+
+return(bp)
+
+}
+
+bc_season_bp_op1  <- function(tab,
+                        save = FALSE){
+
+# Set color scale
+lbls2 <- c('early_dry', 'dry')
+vec_color2 <- c("#79ad41", "#ebc174" )
+
+
+
+# option 2
+
+
+bp <-
+
+  tab %>%
+  ggplot2::ggplot(aes(x = season1, fill = season1))+
+  geom_bar()+
+  facet_wrap(~body_condition)+
+  theme_bw()+
+  theme(legend.position = "bottom",
+        axis.text.x = (element_text(color ='black'))) +
+  scale_fill_manual( name = "Season:",
+                     labels = c('Early dry', 'Dry'),
+                     values = setNames(vec_color2, lbls2)) +
+  labs(x = "")
+
+ggsave(
+  filename = paste({{vary}},'per',{{varx}},'all_sp.jpg', sep ='_'), # filename : vary_per_varx_all_sp
+  device = 'jpg',
+  path = here::here("output", "data_exploration"))
+
+
+if(save == TRUE){
+  ggsave(fat_rate_CV_boxplot, file =here::here("output", "data_exploration", "boxplot_facet(bc)_season_op2.jpg"), device = "jpg")
+}
+
+return(bp)
+
+}
+
+# + emaciated indiv (<20) during dry season vs early dry --> reverse --> + good indiv (>70) early dry vs dry season
+
+
 #########################################################################################################################################################
 ######################################## DRAFT ##################################################################
 ##################################################################################################################
