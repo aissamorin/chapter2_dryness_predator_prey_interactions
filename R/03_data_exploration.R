@@ -394,38 +394,31 @@ data_tab <-
   dplyr::select(samples_ID, season1, mean_fat_rate)
 
 
+#Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
+
 # explanatory variable : season 1 : qualitative
 # Response variable : mean fat rate : quantitative
 
 str(data_tab)
 summary(data_tab)
 
+boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
+plot(data_tab$mean_fat_rate)
+
 
 # Normality ?
 hist(data_tab$mean_fat_rate, breaks = 26)
 shapiro.test(data_tab$mean_fat_rate)
 
-# data does not follow a normal distribution --> non parametric tests
+# data do not follow a normal distribution --> non parametric tests
 # --> Wilcoxon Man Whitney :
 
 wm1<- wilcox.test(data_tab$mean_fat_rate ~ data_tab$season1)
+wm1
 
-
-
-# Data transformation ?
-
-hist(log(data_tab$mean_fat_rate), breaks = 26)
-hist(sqrt(data_tab$mean_fat_rate), breaks = 26)
-
-data_tab %>%
-  dplyr::mutate()
 
 
 #test ANOVA or 2-sample t-test
-#Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
-
-boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
-plot(data_tab$mean_fat_rate)
 
 #ANOVA model
 lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i
@@ -437,30 +430,14 @@ lm0 <- lm( data_tab$mean_fat_rate ~ 1)
 
 anova(lm0, lm1)
 anova(lm1)
+
+
 # Data transformation ?
 
 hist(log(data_tab$mean_fat_rate), breaks = 26)
 hist(sqrt(data_tab$mean_fat_rate), breaks = 26)
 
 
-
-
-#test ANOVA (or 2-sample t-test)
-#Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
-
-boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
-plot(data_tab$mean_fat_rate)
-
-#ANOVA model
-lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i
-
-summary(lm1)
-
-# test du modèle
-lm0 <- lm( data_tab$mean_fat_rate ~ 1)
-
-anova(lm0, lm1)
-anova(lm1)
 
 
 
