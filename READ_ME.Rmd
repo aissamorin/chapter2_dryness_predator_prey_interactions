@@ -510,4 +510,56 @@ Include sub-adult in addition to adult & old individuals, with bones collected b
 
 ### __III Body condition analyses__
 
+#### A) 'Gold standard' analyses 
 
+<br>
+
+_Data preparation_
+
+sample's mean fat rates have been translated into categorical variable 'body_condition', as follows : 
+
++ fat rate < 0.20 : emaciated
++ 0.20 < fat rate < 0.70 
++ fat rate > 0.70
+
+
+(NB: I need to correct codes with =</ >= etc...) 
+
+```{r}
+
+# data preparation 
+
+bc_gs_data <- get_body_condition_data_gs(tab = clean_fat_data,
+                           save =  T)
+
+```
+
+<br>
+
+```{r}
+
+#> Option 1 - bc ~ season facet with season  ####
+
+bc_season_bp_op1(tab = bc_gs_data,
+                 save = T)
+
+```
+<br>
+
+Number of emaciated carcasses/individuals lower during early dry season, increase during dry season.  
+The observe the reverse for the thin and good carcasses/individual.  
+--> Proportion of emaciated individual dry > early dry?  
+
+<br>
+
+```{r}
+
+#> Option 1 - bc ~ season facet with bc  ####
+
+ bc_season_bp_op2(tab = bc_gs_data,
+                  save = T)
+
+```
+More emaciated individuals/carcasses (<20) during dry season vs early dry.   
+We observed the reverse for good condition carcasses/ indiv (>70) in early dry vs dry season.  
+Thin individuals.carcasses : only a small change.  
