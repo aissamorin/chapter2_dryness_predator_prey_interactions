@@ -495,7 +495,137 @@ gs_data %>%
 
 ```
 
-##### Statistical Analyses (ANOVA)
+##### Statistical Analyses (exploratory)
+
+```{r}
+# >> statistical analyses (exploratory) ####
+
+data_tab <-
+
+  gs_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, season1) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(samples_ID, season1, mean_fat_rate)
+
+```
+
+  
+_Question_ : is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
+
++ Explanatory variable : season, qualitative
++ Response variable : mean fat rate, quantitative  
+  
+Data structure : 
+```{r, include = TRUE}
+
+#Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
+
+# explanatory variable : season 1 : qualitative
+# Response variable : mean fat rate : quantitative
+
+str(data_tab)
+summary(data_tab)
+
+```
+  
+Graphical representation of the data :  
+
+```{r, include = TRUE}
+
+boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
+plot(data_tab$mean_fat_rate)
+
+```
+  
+  Are the data normally distributed ?
+```{r, include = TRUE}
+
+# Normality ?
+hist(data_tab$mean_fat_rate, breaks = 26)
+shapiro.test(data_tab$mean_fat_rate)
+
+```
+
+<br>
+According to the results of the shapiro test (p-value significative) and histogram above, the data are not normally distributed, which calls for non parametric test (?)
+
+<br>  
+
+We compare 2 samples (2 treatments) --> Wilcoxon-Man-Whitney test :     
+
+<br>  
+
+```{r, include = TRUE}
+
+# data do not follow a normal distribution --> non parametric tests
+# --> Wilcoxon Man Whitney :
+
+wm1<- wilcox.test(data_tab$mean_fat_rate ~ data_tab$season1)
+wm1
+
+```
+
+<br>
+
+I have also made an ANOVA (as discussed) :
+
+<br>
+
+Model : mean fate rate ~ season (2 level : early dry & dry) 
+
+<br>
+
+```{r, include = TRUE}
+#test ANOVA or 2-sample t-test
+
+#ANOVA model
+lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i
+summary(lm1)
+
+```
+
+<br>
+
+Model test 
+
+<br>
+
+```{r, include = TRUE}
+# Model test
+lm0 <- lm( data_tab$mean_fat_rate ~ 1)# Null model 
+
+anova(lm0, lm1) # comparison between model null and model 1
+
+```
+
+<br> 
+
+Apparently the lm1 model does not do better than the null model
+
+<br> 
+
+_Parameters' test_ 
+
+```{r, include = TRUE}
+anova(lm1)
+```
+
+<br> 
+<br> 
+
+Since the data aren't normally distributed, maybe we should try data transformation ?
+
+<br> 
+
+```{r, include = TRUE}
+# Data transformation ?
+
+hist(log(data_tab$mean_fat_rate), breaks = 26)
+hist(sqrt(data_tab$mean_fat_rate), breaks = 26)
+
+
+```
 
 
 
@@ -503,7 +633,10 @@ gs_data %>%
 
 <br>
 
-Include sub-adult in addition to adult & old individuals, with bones collected before 6 days and within 6 to 8 days
+Include sub-adult in addition to adult & old individuals, with bones collected before 6 days and within 6 to 8 days  
+  
+_(Coming soon)_
+
 
 <br>
 
@@ -563,3 +696,6 @@ The observe the reverse for the thin and good carcasses/individual.
 More emaciated individuals/carcasses (<20) during dry season vs early dry.   
 We observed the reverse for good condition carcasses/ indiv (>70) in early dry vs dry season.  
 Thin individuals.carcasses : only a small change.  
+
+
+2 variables qualitative --> chi square test ? 
