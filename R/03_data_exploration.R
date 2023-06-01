@@ -398,8 +398,19 @@ boxplot_main_sp <- function(tab,
 
 #>> Data preparation ####
 
+#' Get 'gold standard' body condition data, i.e. keep adult and old individuals only, with bones collected before 6 days
+#'
+#' @param tab table containing (cleaned) fat data, default = clean_fat_data
+#' @param save whether we wish the table to be saved or not
+#'
+#' @return return a table with mean fat rates translated into body condition, 3 levels : emaciated (>0.20), thin (between 0.20 & 0.70) & good (>0.70)
+#' @export
+
 get_body_condition_data_gs <- function(tab = clean_fat_data,
                                        save = FALSE){
+
+
+
 
 bc_data_gs <-
 
@@ -461,8 +472,22 @@ return(bc_data_gs)
 
 # >> Boxplots ####
 
+# option 1 ####
+
+#' Get boxplots of carcasses body condition as a function of season, faceted by season
+#'
+#' @param tab table with fat rates translated in body condition
+#' @param save whether we wish the figure to be saved
+#'
+#' @return return a boxplot figure
+#' @export
+
 bc_season_bp_op1 <- function(tab,
                         save = FALSE){
+
+
+
+
 
 # option 1
 # Set color scale
@@ -486,23 +511,37 @@ bp <-
   labs(x = "")
 
 if(save == TRUE){
+
 ggsave(bp, file =here::here("output", "data_exploration", "boxplot_bc_face(season)_op1.jpg"), device = "jpg")
-}
+
+  }
 
 return(bp)
 
 }
 
-bc_season_bp_op1  <- function(tab,
+# option 2 ####
+
+
+#' Get boxplots of carcasses body condition as a function of season, faceted by season
+#'
+#' @param tab tab with fat rates translated into body condition
+#' @param savewhether we wish the figure to be saved
+#'
+#' @return a boxplot figure
+#' @export
+
+bc_season_bp_op2  <- function(tab,
                         save = FALSE){
 
-# Set color scale
-lbls2 <- c('early_dry', 'dry')
-vec_color2 <- c("#79ad41", "#ebc174" )
+
 
 
 
 # option 2
+# Set color scale
+lbls2 <- c('early_dry', 'dry')
+vec_color2 <- c("#79ad41", "#ebc174" )
 
 
 bp <-
@@ -519,19 +558,17 @@ bp <-
                      values = setNames(vec_color2, lbls2)) +
   labs(x = "")
 
-ggsave(
-  filename = paste({{vary}},'per',{{varx}},'all_sp.jpg', sep ='_'), # filename : vary_per_varx_all_sp
-  device = 'jpg',
-  path = here::here("output", "data_exploration"))
-
 
 if(save == TRUE){
-  ggsave(fat_rate_CV_boxplot, file =here::here("output", "data_exploration", "boxplot_facet(bc)_season_op2.jpg"), device = "jpg")
-}
+
+    ggsave(bp, file =here::here("output", "data_exploration", "boxplot_facet(bc)_season_op2.jpg"), device = "jpg")
+
+  }
 
 return(bp)
 
 }
+
 
 # + emaciated indiv (<20) during dry season vs early dry --> reverse --> + good indiv (>70) early dry vs dry season
 
