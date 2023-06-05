@@ -229,14 +229,14 @@ gs_data <-
   dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass,# compute fat rate
                 cluster_month = lubridate::month(cluster_start_date), #get the month the prey was killed (?)
                 #compute season from cluster_month
-                season1 = dplyr::if_else(cluster_month %in% c(1:6),# early_dry: 1-6, dry: 7-12
-                                         'early_dry',
-                                         'dry'),
+                season1 = dplyr::if_else(cluster_month %in% c(7:10),# lean_season: 7-10, productive season: 1-6 & 11,12
+                                         'lean',
+                                         'productive'),
                 season2 = dplyr::if_else(cluster_month %in% c(1:7),# early_dry: 1-7, dry: 7-12
                                          'early_dry',
                                          'dry')) %>%
   #change factor level orger (for graphical presentation purpose) from 1.dry 2.early-dry to 1.early_dry  2.dry
-  dplyr::mutate(season1 = forcats::fct(season1,levels = c("early_dry","dry")),
+  dplyr::mutate(season1 = forcats::fct(season1,levels = c("lean","productive")),
                 season2 = forcats::fct(season2,levels = c("early_dry","dry")))
 
 
@@ -383,60 +383,60 @@ boxplot_main_sp <- function(tab,
 
 
 
-# >> statistical analyses (exploratory) ####
-
-data_tab <-
-
-  gs_data %>%
-  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, season1) %>%
-  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
-  dplyr::ungroup() %>%
-  dplyr::select(samples_ID, season1, mean_fat_rate)
-
-
-#Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
-
-# explanatory variable : season 1 : qualitative
-# Response variable : mean fat rate : quantitative
-
-str(data_tab)
-summary(data_tab)
-
-boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
-plot(data_tab$mean_fat_rate)
-
-
-# Normality ?
-hist(data_tab$mean_fat_rate, breaks = 26)
-shapiro.test(data_tab$mean_fat_rate)
-
-# data do not follow a normal distribution --> non parametric tests
-# --> Wilcoxon Man Whitney :
-
-wm1<- wilcox.test(data_tab$mean_fat_rate ~ data_tab$season1)
-wm1
-
-
-
-#test ANOVA or 2-sample t-test
-
-#ANOVA model
-lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i
-
-summary(lm1)
-
-# test du modèle
-lm0 <- lm( data_tab$mean_fat_rate ~ 1)
-
-anova(lm0, lm1)
-anova(lm1)
-
-
-# Data transformation ?
-
-hist(log(data_tab$mean_fat_rate), breaks = 26)
-hist(sqrt(data_tab$mean_fat_rate), breaks = 26)
-
+# # >> statistical analyses (exploratory) ####
+#
+# data_tab <-
+#
+#   gs_data %>%
+#   dplyr::group_by(samples_ID, cluster_start_date, cluster_month, season1) %>%
+#   dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+#   dplyr::ungroup() %>%
+#   dplyr::select(samples_ID, season1, mean_fat_rate)
+#
+#
+# #Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
+#
+# # explanatory variable : season 1 : qualitative
+# # Response variable : mean fat rate : quantitative
+#
+# str(data_tab)
+# summary(data_tab)
+#
+# boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
+# plot(data_tab$mean_fat_rate)
+#
+#
+# # Normality ?
+# hist(data_tab$mean_fat_rate, breaks = 26)
+# shapiro.test(data_tab$mean_fat_rate)
+#
+# # data do not follow a normal distribution --> non parametric tests
+# # --> Wilcoxon Man Whitney :
+#
+# wm1<- wilcox.test(data_tab$mean_fat_rate ~ data_tab$season1)
+# wm1
+#
+#
+#
+# #test ANOVA or 2-sample t-test
+#
+# #ANOVA model
+# lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i
+#
+# summary(lm1)
+#
+# # test du modèle
+# lm0 <- lm( data_tab$mean_fat_rate ~ 1)
+#
+# anova(lm0, lm1)
+# anova(lm1)
+#
+#
+# # Data transformation ?
+#
+# hist(log(data_tab$mean_fat_rate), breaks = 26)
+# hist(sqrt(data_tab$mean_fat_rate), breaks = 26)
+#
 
 
 
@@ -492,11 +492,11 @@ bc_data_gs <-
   dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass,# compute fat rate
                 cluster_month = lubridate::month(cluster_start_date), #get the month the prey was killed (?)
                 #compute season from cluster_month
-                season1 = dplyr::if_else(cluster_month %in% c(1:6),# early_dry: 1-6, dry: 7-12
-                                         'early_dry',
-                                         'dry')) %>%
-  #change factor level orger (for graphical presentation purpose) from 1.dry 2.early-dry to 1.early_dry  2.dry
-  dplyr::mutate(season1 = forcats::fct(season1,levels = c("early_dry","dry"))) %>%
+                season1 = dplyr::if_else(cluster_month %in% c(7:10),# lean: 7-10, productive season: 1-6, 11,12
+                                         'lean',
+                                         'productive')) %>%
+  #change factor level order (for graphical presentation purpose)
+  dplyr::mutate(season1 = forcats::fct(season1,levels = c("lean","productive"))) %>%
   # compute mean fat rate
                   dplyr::group_by(samples_ID,
                                   cluster_start_date,
@@ -599,8 +599,8 @@ bc_season_bp_op2  <- function(tab,
 
 # option 2
 # Set color scale
-lbls2 <- c('early_dry', 'dry')
-vec_color2 <- c("#79ad41", "#ebc174" )
+lbls2 <- c('lean', 'productive')
+vec_color2 <- c( "#ebc174", "#79ad41" )
 
 
 bp <-
@@ -613,7 +613,7 @@ bp <-
   theme(legend.position = "bottom",
         axis.text.x = (element_text(color ='black'))) +
   scale_fill_manual( name = "Season:",
-                     labels = c('Early dry', 'Dry'),
+                     labels = c('Lean season', 'Productive season'),
                      values = setNames(vec_color2, lbls2)) +
   labs(x = "")
 
