@@ -19,6 +19,7 @@
 clean_raw_fat_data <- function(fat_data_raw,
                                save = FALSE,
                                filename = cleaned_fat_data) {
+clean_data_set <-
 
  fat_data_raw %>%
   # remove all 'mass_j1, 'mass_j2' etc... columns '\\d+$' = any number suits
@@ -39,7 +40,8 @@ clean_raw_fat_data <- function(fat_data_raw,
     readr::write_csv2(fat_data_raw, here::here(paste("output/clean_fat_data/", filename,".csv",  sep ="")))
   }
 
-  fat_data_raw
+
+clean_data_set
 
 } #End of function clean_raw_fat_data
 
