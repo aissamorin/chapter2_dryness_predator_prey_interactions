@@ -40,14 +40,22 @@ sample_dry_mass_boxplot <- get_dry_mass_boxplot(clean_fat_data,
 #>> b) Replicate fat rate
 
 # get Coefficient of variation table
-get_CV_fat_rate_table <- get_CV_fat_rate_table(clean_fat_data,
+CV_fat_rate_table <- get_CV_fat_rate_table(clean_fat_data,
                                                save = T)
 
   # Get dry mass boxplots (for each )
-get_fat_rate_boxplot <- get_fat_rate_boxplot(clean_fat_data,
-                                             save =  TRUE)
+fat_rate_boxplot <- get_fat_rate_boxplot(clean_fat_data,
+                                             save =  F)
 
+# Histogram
 
+CV_fat_rate_hist <- get_fat_rate_CV_hist(tab = CV_fat_rate_table,
+                     save = F)
+
+high_CV_table <- get_high_CV_table(tab = clean_fat_data,
+                  CV_fat_rate_table = CV_fat_rate_table,
+                  value = 0.25,
+                  save = F)
 
 ##> II Fat rate analysis ########
 

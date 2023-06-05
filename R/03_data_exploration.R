@@ -135,6 +135,7 @@ CV_fat_rate_table
 
 #graphical representation
 
+
 #' Get boxplots of fat rates for each samples (i.e. sample_ID)
 #'
 #' @param tab fat data cleaned with 'clean_raw_fat_data' function, default is clean_fat_data
@@ -180,6 +181,88 @@ ggsave(fat_rate_CV_boxplot, file =here::here("output", "data_exploration", "fat_
 
 # return
 fat_rate_CV_boxplot
+
+}
+
+
+# Histogramme ####
+
+#histogram
+
+#' Get an histogram of fat rate coefficients of variation
+#'
+#' @param tab table with fat rate coefficients of variation
+#' @param save whether we want the figure to be saved or not, default = F
+#'
+#' @return a histogram of fat rate coeeficient of variation
+#' @export
+
+get_fat_rate_CV_hist <- function(tab,
+                                 save = F){
+
+
+  fat_rate_CV_hist <-
+    #tab <=> CV_fat_rate_table
+    ggplot(tab, aes(CV_fat_rate))+
+    geom_histogram(fill = '#ab3329', color = '#65150b')+
+    theme_bw()+
+    theme(legend.position = "bottom",
+          axis.text.x = (element_text(color ='black')))+
+    labs(x = "Fat rate coefficient of variation")
+
+  #To save figure
+  if(save == TRUE){
+    ggsave(fat_rate_CV_boxplot, file =here::here("output", "data_exploration", "fat_rate_CV_hist.jpg"), device = "jpg")
+  }
+
+
+  return(fat_rate_CV_hist)
+
+}
+
+# 3 samples with a CV > 0.25
+
+#' Get a table with the higher coefficient of variation
+#'
+#' @param tab table with clean fat data
+#' @param value the value above which a CV is considered high, default = 0.25
+#' @param save whether we want the table to be saved of not, default = F
+#'
+#' @return a table of the samples with fat rate coefficient of variation (strictly) higher than 'value'
+#' @export
+
+get_high_CV_table <- function(tab,
+                              value = 0.25,
+                              CV_fat_rate_table,
+                              save = FALSE){
+
+
+
+  high_cv_table <-
+
+    tab %>% #clean data set
+    dplyr::select(samples_ID,
+                  cluster_start_date,
+                  collection_interval,
+                  predator_species,
+                  carcass_species,
+                  sex,
+                  age,
+                  bone_type,
+    ) %>%
+    dplyr::left_join(.,CV_fat_rate_table ) %>%
+    dplyr::filter(CV_fat_rate > value )
+
+
+  if(save == TRUE){
+    #save table
+    readr::write_csv2(high_cv_table, file =here::here("output", "data_exploration", paste("high_cv_table",value,".csv")))
+
+  }
+
+
+
+  return(high_cv_table)
 
 }
 
