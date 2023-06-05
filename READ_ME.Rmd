@@ -176,12 +176,39 @@ Table with coefficients of variation calculated per sample_ID
 <br>
 
 ```{r}
- get_CV_fat_rate_table(clean_fat_data,
-                       save = F)%>% 
- kableExtra::kbl() %>% 
+ CV_fat_rate_table <- get_CV_fat_rate_table(clean_fat_data,
+                       save = F) 
+
+CV_fat_rate_table %>% 
+  kableExtra::kbl() %>% 
    kableExtra::kable_styling() %>% 
    kableExtra::scroll_box(width = "100%", height = "250px")
 ```
+
+<br>
+
+```{r}
+get_fat_rate_CV_hist(tab = CV_fat_rate_table,
+                     save = F)
+```
+
+There are 3 samples that stands out !
+
+<br>
+
+```{r}
+ get_high_CV_table(tab = clean_fat_data,
+                  CV_fat_rate_table = CV_fat_rate_table,
+                  value = 0.25,
+                  save = F) %>% 
+   kableExtra::kbl() %>% 
+   kableExtra::kable_styling() %>% 
+   kableExtra::scroll_box(width = "100%", height = "250px")
+```
+
+<br>
+
+The samples with the highest coefficient of variation (> 0.25) are HiP_B_012, HiP_B_022, HiP_B_055. All them should be included in the 'golden standard' analysis.
 
 <br>
 <br>
