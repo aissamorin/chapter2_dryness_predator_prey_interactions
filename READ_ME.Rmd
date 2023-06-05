@@ -76,7 +76,7 @@ The function include an option to save the cleaned dataset, the user must specif
 ```{r}
 
 clean_fat_data <- clean_raw_fat_data(fat_data_raw,
-                                     save = F,
+                                     save = T,
                                      filename = 'cleaned_fat_data')
 ```
 
@@ -255,7 +255,7 @@ kableExtra::kbl() %>%
 
 Following discussion with Marion, I have tested for 2 ways of dividing season  
 
-+ __season 1__: early_dry (season): 1-6, dry (season): 7-12 , or
++ __season 1__: lean (season): 7-10 (july-october), productive (season): 1-6 & 11,12 , or
 + __season 2__: early_dry : 1-7, dry: 7-12 
 
 ***
@@ -316,7 +316,9 @@ get_nb_carcass_table(gs_data,
 
 <br> 
 
-Since it seems that season 1 allows for more balanced categories, and their is no difference for the number of carcasses per species per season1/season 2, I'll use a the 'season 1' way to divide the year afterwards
+<!-- Since it seems that season 1 allows for more balanced categories, and their is no difference for the number of carcasses per species per season1/season 2,  -->
+
+I'll use a the 'season 1' way to divide the year afterwards
 
 <br> 
 <br> 
@@ -418,7 +420,7 @@ gs_data %>%
 
 <br>
 
-Since season 1 is more balanced than season 2, I use 'season1' (early_dry: 1-6, dry : 7-12)
+Since season 1 is more balanced than season 2, I use 'season1' (lean - july to october- vs productive season)
 
 <br>
 
@@ -443,7 +445,7 @@ __Fat rate as a function of season 1, Buffalo, Nyala & Warthog__
 
 
 ```{r}
-# fat rate value ~ season1 (early dry = 2-6 & dry = 7-11), main sp
+# fat rate value ~ season1 (lean vs productive), main sp
 
 boxplot_main_sp(tab = gs_data,
                 varx = 'season1' ,
@@ -513,7 +515,7 @@ data_tab <-
   
 _Question_ : is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
 
-+ Explanatory variable : season, qualitative
++ Explanatory variable : season, qualitative, 2 levels : lean vs productive 
 + Response variable : mean fat rate, quantitative  
   
 Data structure : 
@@ -521,7 +523,7 @@ Data structure :
 
 #Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
 
-# explanatory variable : season 1 : qualitative
+# explanatory variable : season 1 : qualitative, 2 levels 
 # Response variable : mean fat rate : quantitative
 
 str(data_tab)
@@ -566,66 +568,66 @@ wm1
 
 ```
 
-<br>
+<!-- <br> -->
 
-I have also made an ANOVA (as discussed) :
+<!-- I have also made an ANOVA (as discussed) : -->
 
-<br>
+<!-- <br> -->
 
-Model : mean fate rate ~ season (2 level : early dry & dry) 
+<!-- Model : mean fate rate ~ season (2 level : early dry & dry)  -->
 
-<br>
+<!-- <br> -->
 
-```{r, include = TRUE}
-#test ANOVA or 2-sample t-test
+<!-- ```{r, include = TRUE} -->
+<!-- #test ANOVA or 2-sample t-test -->
 
-#ANOVA model
-lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i
-summary(lm1)
+<!-- #ANOVA model -->
+<!-- lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i -->
+<!-- summary(lm1) -->
 
-```
+<!-- ``` -->
 
-<br>
+<!-- <br> -->
 
-Model test 
+<!-- Model test  -->
 
-<br>
+<!-- <br> -->
 
-```{r, include = TRUE}
-# Model test
-lm0 <- lm( data_tab$mean_fat_rate ~ 1)# Null model 
+<!-- ```{r, include = TRUE} -->
+<!-- # Model test -->
+<!-- lm0 <- lm( data_tab$mean_fat_rate ~ 1)# Null model  -->
 
-anova(lm0, lm1) # comparison between model null and model 1
+<!-- anova(lm0, lm1) # comparison between model null and model 1 -->
 
-```
+<!-- ``` -->
 
-<br> 
+<!-- <br>  -->
 
-Apparently the lm1 model does not do better than the null model
+<!-- Apparently the lm1 model does not do better than the null model -->
 
-<br> 
+<!-- <br>  -->
 
-_Parameters' test_ 
+<!-- _Parameters' test_  -->
 
-```{r, include = TRUE}
-anova(lm1)
-```
+<!-- ```{r, include = TRUE} -->
+<!-- anova(lm1) -->
+<!-- ``` -->
 
-<br> 
-<br> 
+<!-- <br>  -->
+<!-- <br>  -->
 
-Since the data aren't normally distributed, maybe we should try data transformation ?
+<!-- Since the data aren't normally distributed, maybe we should try data transformation ? -->
 
-<br> 
+<!-- <br>  -->
 
-```{r, include = TRUE}
-# Data transformation ?
+<!-- ```{r, include = TRUE} -->
+<!-- # Data transformation ? -->
 
-hist(log(data_tab$mean_fat_rate), breaks = 26)
-hist(sqrt(data_tab$mean_fat_rate), breaks = 26)
+<!-- hist(log(data_tab$mean_fat_rate), breaks = 26) -->
+<!-- hist(sqrt(data_tab$mean_fat_rate), breaks = 26) -->
 
 
-```
+<!-- ``` -->
 
 
 
@@ -679,9 +681,9 @@ bc_season_bp_op1(tab = bc_gs_data,
 ```
 <br>
 
-Number of emaciated carcasses/individuals lower during early dry season, increase during dry season.  
-The observe the reverse for the thin and good carcasses/individual.  
---> Proportion of emaciated individual dry > early dry?  
+Number of emaciated carcasses/individuals lower during productive season, increase during dry season.  
+We observe the reverse for the thin and good carcasses/individual.  
+--> Proportion of emaciated individual lean season > productive season ?  
 
 <br>
 
@@ -693,9 +695,9 @@ The observe the reverse for the thin and good carcasses/individual.
                   save = T)
 
 ```
-More emaciated individuals/carcasses (<20) during dry season vs early dry.   
-We observed the reverse for good condition carcasses/ indiv (>70) in early dry vs dry season.  
+More emaciated individuals/carcasses (<20) during lean vs productive.   
+We observed the reverse for good condition carcasses/ indiv (>70) in productive vs lean season.  
 Thin individuals.carcasses : only a small change.  
 
 
-2 variables qualitative --> chi square test ? 
+2 qualitative variables --> chi square test ? 
