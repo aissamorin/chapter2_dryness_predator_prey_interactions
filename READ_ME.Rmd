@@ -714,17 +714,108 @@ We observe the reverse for the thin and good carcasses/individual.
 
 <br>
 
+Per species 
+
+<br>
+
+Buffalo
+
+<br> 
+
+```{r}
+#buffalo
+bc_season_bp_op1_sp(tab = bc_gs_data,
+                    sp = 'buffalo',
+                    save = FALSE)
+
+```
+
+<br> 
+
+Warthog
+
+<br> 
+
+```{r}
+#warthog
+bc_season_bp_op1_sp(tab = bc_gs_data,
+                    sp = 'warthog',
+                    save = FALSE)
+```
+
+<br> 
+
+Nyala
+
+<br> 
+
+```{r}                    
+#warthog
+bc_season_bp_op1_sp(tab = bc_gs_data,
+                    sp = 'nyala',
+                    save = FALSE)
+```
+
+
+
 ```{r}
 
-#> Option 1 - bc ~ season facet with bc  ####
+#> Option 2 - bc ~ season facet with bc  ####
 
  bc_season_bp_op2(tab = bc_gs_data,
                   save = T)
 
 ```
+
+<br> 
+
 More emaciated individuals/carcasses (<20) during lean vs productive.   
 We observed the reverse for good condition carcasses/ indiv (>70) in productive vs lean season.  
 Thin individuals.carcasses : only a small change.  
 
 
 2 qualitative variables --> chi square test ? 
+
+<br>
+
+Per species 
+
+<br>
+
+Buffalo
+
+<br> 
+
+```{r}
+#buffalo
+bc_season_bp_op2_sp(tab = bc_gs_data,
+                    sp = 'buffalo',
+                    save = FALSE)
+
+```
+
+<br> 
+
+Warthog
+
+<br> 
+
+```{r}
+#warthog
+bc_season_bp_op2_sp(tab = bc_gs_data,
+                    sp = 'warthog',
+                    save = FALSE)
+```
+
+<br> 
+
+Nyala
+
+<br> 
+
+```{r}                    
+#warthog
+bc_season_bp_op2_sp(tab = bc_gs_data,
+                    sp = 'nyala',
+                    save = FALSE)
+```
