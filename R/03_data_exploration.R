@@ -662,6 +662,7 @@ return(bp)
 
 }
 
+
 # option 2 ####
 
 
@@ -713,6 +714,133 @@ return(bp)
 
 
 # + emaciated indiv (<20) during dry season vs early dry --> reverse --> + good indiv (>70) early dry vs dry season
+
+
+
+# Main species ####
+
+# > Option 1 ####
+
+#' Get species boxplots of carcasses body condition as a function of season, faceted by season
+#'
+#' @param tab Table with fat rate converted into a categorical body condition variable
+#' @param sp the species of interest
+#' @param save whether we want the graph to be saved or not, default = FALSE
+#'
+#' @return a bar plot faceted per season for the species of interest
+#' @export
+
+bc_season_bp_op1_sp <- function(tab,
+                                sp,
+                                save = FALSE){
+
+
+
+
+
+  # option 1
+  # Set color scale
+  lbls1 <- c('emaciated', 'thin','good')
+  vec_color1 <- c( "#a50f15", "#ebc174", "#79ad41")
+
+
+
+  bp <-
+
+    tab %>%
+    dplyr::filter(carcass_species == sp) %>%
+    dplyr::group_by(season1, body_condition ) %>%
+    dplyr::mutate(body_condition = factor(body_condition, levels = c('emaciated', 'thin', 'good'))) %>%
+    dplyr::summarise(nb_bc = dplyr::n()) %>%
+    dplyr::mutate(percentage = nb_bc/sum(nb_bc)*100) %>%
+
+    # graph
+    ggplot2::ggplot(aes(body_condition, percentage, fill = body_condition)) +
+    geom_col() +
+    facet_wrap(~season1) +
+    theme_bw()+
+    theme(legend.position = "bottom",
+          axis.text.x = (element_text(color ='black')))+
+    scale_fill_manual( name = "Body condition :",
+                       labels = c('Emaciated', 'Thin', 'Good'),
+                       values = setNames(vec_color1, lbls1),
+                       drop = FALSE) +
+    scale_x_discrete(labels = c('Emaciated', 'Thin', 'Good'),
+                     drop = FALSE)+
+    labs(x = "")
+
+  if(save == TRUE){
+
+    ggsave(bp, file =here::here("output", "data_exploration", paste("boxplot_bc_facet(season)_op1",sp,".jpg")), device = "jpg")
+
+  }
+
+  return(bp)
+
+}
+
+# option 2 ####
+
+
+#' Get species boxplot of carcasses body condition as a function of season, faceted by body condition
+#'
+#' @param tab Table with fat rate converted into a categorical body condition variable
+#' @param sp The species of interest
+#' @param save Whether you want to save the figure or not
+#'
+#' @return a barplot faceted per body condition for the species of interest
+#' @export
+
+bc_season_bp_op2_sp  <- function(tab,
+                              sp,
+                              save = FALSE){
+
+
+
+
+
+  # option 2
+  # Set color scale
+  lbls2 <- c('lean', 'productive')
+  vec_color2 <- c( "#ebc174", "#79ad41" )
+
+
+  bp <-
+
+    tab %>%
+    dplyr::filter(carcass_species == sp) %>%
+    dplyr::group_by(body_condition, season1  ) %>%
+    dplyr::mutate(body_condition = factor(body_condition, levels = c('emaciated', 'thin', 'good'))) %>%
+    dplyr::summarise(nb_bc = dplyr::n()) %>%
+    dplyr::mutate(percentage = nb_bc/sum(nb_bc)*100) %>%
+
+
+
+    ggplot2::ggplot(aes(season1, percentage, fill = season1))+
+    geom_col()+
+    facet_wrap(~body_condition, drop = FALSE)+
+    theme_bw()+
+    theme(legend.position = "bottom",
+          axis.text.x = (element_text(color ='black'))) +
+    scale_fill_manual( name = "Season:",
+                       labels = c('Lean season', 'Productive season'),
+                       values = setNames(vec_color2, lbls2),
+                       drop =  FALSE) +
+    scale_x_discrete(labels = c('Lean season', 'Productive season'),
+                     drop = FALSE)+
+    labs(x = "")
+
+
+
+  if(save == TRUE){
+
+    ggsave(bp, file =here::here("output", "data_exploration", paste("boxplot_facet(bc)_season_op2", sp,".jpg")), device = "jpg")
+
+  }
+
+  return(bp)
+
+}
 
 
 #########################################################################################################################################################

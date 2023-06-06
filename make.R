@@ -205,7 +205,38 @@ bc_gs_data <- get_body_condition_data_gs(tab = clean_fat_data,
 bc_season_bp_op1(tab = bc_gs_data,
                  save = T)
 
-#> Option 1 - bc ~ season facet with bc  ####
+# Per species
+
+#buffalo
+bc_season_bp_op1_sp(tab = bc_gs_data,
+                    sp = 'buffalo',
+                    save = FALSE)
+#warthog
+bc_season_bp_op1_sp(tab = bc_gs_data,
+                    sp = 'warthog',
+                    save = FALSE)
+#warthog
+bc_season_bp_op1_sp(tab = bc_gs_data,
+                    sp = 'nyala',
+                    save = FALSE)
+
+
+#> Option 2 - bc ~ season facet with bc  ####
 
  bc_season_bp_op2(tab = bc_gs_data,
                   save = T)
+
+# Per species
+
+bc_season_bp_op2_sp(tab = bc_gs_data,
+                    sp = 'buffalo',
+                    save = FALSE)
+
+bc_season_bp_op2_sp(tab = bc_gs_data,
+                    sp = 'warthog',
+                    save = FALSE)
+
+bc_season_bp_op2_sp(tab = bc_gs_data,
+                    sp = 'nyala',
+                    save = FALSE)
+
