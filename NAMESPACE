@@ -2,7 +2,9 @@
 
 export("%>%")
 export(bc_season_bp_op1)
+export(bc_season_bp_op1_sp)
 export(bc_season_bp_op2)
+export(bc_season_bp_op2_sp)
 export(boxplot_all_sp)
 export(boxplot_main_sp)
 export(clean_raw_fat_data)
