@@ -191,6 +191,11 @@ gs_data %>%
 # B) Larger sample analyses ####
 #Include sub-adult in addition to adult & old individuals, with bones collected before 6 days and within 6 to 8 days
 
+# > data preparation ####
+
+ls_data <- get_ls_data(tab= clean_fat_data,
+                       save = F)
+
 # II Body condition analyses ####
 
 # A) Gold standard data ####
