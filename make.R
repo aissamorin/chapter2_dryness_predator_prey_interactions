@@ -418,3 +418,21 @@ bc_season_bp_op2_sp(tab = bc_ls_data,
                     sp = 'nyala',
                     save = FALSE)
 
+
+# III Fat rate evolution & bone freshness #####
+
+# > Data preparation ####
+
+fat_rate_evol_data <- get_fat_rate_evol_data(tab = fat_data_raw,
+                       save = F)
+
+# > Figures ####
+
+#>> Boxplot of fat rate ~ Bone 'freshness'
+
+fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
+
+#>> Scatterplot of mean fat rare ~ Bone 'freshness'
+
+mean_fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
+
