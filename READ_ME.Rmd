@@ -664,10 +664,282 @@ wm1
 
 Include sub-adult in addition to adult & old individuals, with bones collected before 6 days and within 6 to 8 days  
   
-_(Coming soon)_
+<br>
+
+
+```{r}
+#> data preparation ####
+
+ls_data <- get_ls_data(clean_fat_data)
+
+```
+
+<br>
+
+
+##### Carcass number summary tables 
+
+<br> 
+
+Number of carcasses (i.e. sample ID) per species, month (cluster_month), season, and season & species
+
+<br> 
+
+_Per species_
+
+<br> 
+
+```{r}
+get_nb_carcass_table(ls_data,
+                    carcass_species) %>% 
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling() %>% 
+   kableExtra::scroll_box(width = "100%", height = "250px") 
+```
+
+_Per cluster_month_
+
+<br> 
+
+```{r}
+get_nb_carcass_table(ls_data,
+                     cluster_month) %>% 
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling()
+
+```
+
+_Per species & cluster_month_
+
+<br> 
+
+```{r}
+#per specie & per month
+get_nb_carcass_table(ls_data,
+                     carcass_species,cluster_month) %>% #... = cluster_month
+kableExtra::kbl() %>% 
+   kableExtra::kable_styling() %>% 
+   kableExtra::scroll_box(width = "100%", height = "250px") 
+
+```
 
 
 <br>
+<br>
+
+***
+
+
+__season 1__ is defined as follows: lean (season): 7-10 (july-october), productive (season): 1-6 & 11,12 , or
+
+
+***
+<br>
+<br>
+
+_Per Season 1_
+
+<br> 
+
+```{r}
+get_nb_carcass_table(ls_data,
+                     season1) %>% 
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling()
+
+```
+
+
+_Per species & season 1_
+
+<br> 
+
+```{r}
+#per species & season 1
+get_nb_carcass_table(ls_data,
+                     carcass_species,season1) %>% #... = carcass_species, season1
+ kableExtra::kbl() %>% 
+   kableExtra::kable_styling() %>% 
+   kableExtra::scroll_box(width = "100%", height = "250px") 
+
+```
+
+<br>
+<br>
+
+##### Graphical representation (Boxplots)
+
+<br> 
+
+***
+
+For analyses below
+
++ The fat rate values of each replicates (i.e. each raw in the original table :  there are as many fat-rate values as there are of replicates per sample_ID - i.e. up to 5)
++ The mean fat rate is computed over the (up to) 5 replicates per sample, so we have one value per sample_ID. 
++ When looking at species of interest, I only kept the species with the highest number of carcasses + carcasses in both season / over several months
+
+***
+
+<br> 
+
+###### _Per month_  
+
+<br>
+
+__Fat rate as a function of month (cluster_month), all species__
+
+<br>
+
+
+```{r, echo=FALSE, out.width="100%",fig.align = 'center'}
+
+boxplot_all_sp (tab = ls_data,
+                varx = 'cluster_month' ,
+                vary = 'sample_replicate_fat_rate' )
+
+```
+
+<br>
+
+__Fat rate as a function of month (cluster_month), Buffalo, Nyala & Warthog__
+
+<br>
+
+
+```{r}
+
+boxplot_main_sp(tab = ls_data,
+                            varx = 'cluster_month' ,
+                            vary ='sample_replicate_fat_rate',
+                            species_vec = c('buffalo', 'nyala', 'warthog')) 
+
+
+```
+
+
+<br>
+
+__Mean fat rate as a function of month (cluster_month), (replicate level), all species__
+
+<br>
+
+
+```{r, echo=FALSE, out.width="100%",fig.align = 'center'}
+
+# data preparation, compute the mean fat rate per sample_ID & per species
+ls_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+
+  boxplot_all_sp (tab = .,
+                  varx = 'cluster_month' ,
+                  vary = 'mean_fat_rate' )
+
+```
+
+<br>
+
+__Mean fat rate as a function of month (cluster_month), (replicate level), Buffalo, Nyala & Warthog__
+
+<br>
+
+```{r, echo=FALSE, out.width="100%",fig.align = 'center'}
+
+# data preparation, compute the mean fat rate per sample_ID & per species
+ls_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, carcass_species ) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+  #dplyr::filter(carcass_species %in% c('buffalo', 'nyala', 'warthog')) %>%
+
+  boxplot_main_sp( tab = .,
+                   varx= 'cluster_month',
+                   vary= 'mean_fat_rate',
+                   species_vec = c('buffalo', 'nyala', 'warthog'))
+
+```
+
+
+###### _Per season_ 
+
+<br>
+
+Since season 1 is more balanced than season 2, I use 'season1' (lean - july to october- vs productive season)
+
+<br>
+
+__Fat rate as a function of season 1, all species__
+
+```{r}
+
+#fat rate value ~ season1 , all sp
+
+boxplot_all_sp (tab = ls_data,
+                varx = 'season1' ,
+                vary = 'sample_replicate_fat_rate' )
+
+
+```
+
+<br>
+
+__Fat rate as a function of season 1, Buffalo, Nyala & Warthog__
+
+<br>
+
+
+```{r}
+# fat rate value ~ season1 (lean vs productive), main sp
+
+boxplot_main_sp(tab = ls_data,
+                varx = 'season1' ,
+                vary ='sample_replicate_fat_rate',
+                species_vec = c('buffalo', 'nyala', 'warthog'))
+
+```
+
+<br>
+
+__Mean fat rate as a function of season 1, all species__
+
+<br>
+
+```{r}
+# mean fat rate ~ season 1 all sp
+
+# data preparation, compute the mean fat rate per sample_ID & per season1
+ls_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, season1) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+
+  boxplot_all_sp (tab = .,
+                  varx = 'season1' ,
+                  vary = 'mean_fat_rate' )
+
+```
+
+<br>
+
+__Mean fat rate as a function of season 1, Buffalo, Nyala & Warthog__
+
+<br>
+
+```{r}
+# mean fat rate ~ season 1 main sp
+
+# data preparation, compute the mean fat rate per sample_ID, per season1 & per species
+
+ls_data %>%
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, carcass_species, season1 ) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+  dplyr::filter(carcass_species %in% c('buffalo', 'nyala', 'warthog')) %>%
+
+  boxplot_main_sp( tab = .,
+                   varx= 'season1',
+                   vary= 'mean_fat_rate',
+                   species_vec = c('buffalo', 'nyala', 'warthog'))
+
+```
 
 
 ### __III Body condition analyses__
@@ -816,6 +1088,145 @@ Nyala
 ```{r}                    
 #warthog
 bc_season_bp_op2_sp(tab = bc_gs_data,
+                    sp = 'nyala',
+                    save = FALSE)
+```
+
+<br>
+<br>
+
+#### B) Larger sample analyses 
+
+<br>
+
+_Data preparation_
+
+sample's mean fat rates have been translated into categorical variable 'body_condition', as follows : 
+
++ fat rate < 0.20 : emaciated
++ 0.20 < fat rate < 0.70 
++ fat rate > 0.70
+
+
+(NB: I need to correct codes with =</ >= etc...) 
+
+```{r}
+
+# data preparation 
+
+bc_ls_data <- get_body_condition_data_ls(tab = clean_fat_data,
+                           save =  T)
+
+```
+
+<br>
+
+```{r}
+
+#> Option 1 - bc ~ season facet with season  ####
+
+bc_season_bp_op1(tab = bc_ls_data,
+                 save = T)
+
+```
+
+<br>
+
+Per species 
+
+<br>
+
+Buffalo
+
+<br> 
+
+```{r}
+#buffalo
+bc_season_bp_op1_sp(tab = bc_ls_data,
+                    sp = 'buffalo',
+                    save = FALSE)
+
+```
+
+<br> 
+
+Warthog
+
+<br> 
+
+```{r}
+#warthog
+bc_season_bp_op1_sp(tab = bc_ls_data,
+                    sp = 'warthog',
+                    save = FALSE)
+```
+
+<br> 
+
+Nyala
+
+<br> 
+
+```{r}                    
+#warthog
+bc_season_bp_op1_sp(tab = bc_ls_data,
+                    sp = 'nyala',
+                    save = FALSE)
+```
+
+
+
+```{r}
+
+#> Option 2 - bc ~ season facet with bc  ####
+
+ bc_season_bp_op2(tab = bc_ls_data,
+                  save = T)
+
+```
+
+<br> 
+
+
+
+Per species 
+
+<br>
+
+Buffalo
+
+<br> 
+
+```{r}
+#buffalo
+bc_season_bp_op2_sp(tab = bc_ls_data,
+                    sp = 'buffalo',
+                    save = FALSE)
+
+```
+
+<br> 
+
+Warthog
+
+<br> 
+
+```{r}
+#warthog
+bc_season_bp_op2_sp(tab = bc_ls_data,
+                    sp = 'warthog',
+                    save = FALSE)
+```
+
+<br> 
+
+Nyala
+
+<br> 
+
+```{r}                    
+#warthog
+bc_season_bp_op2_sp(tab = bc_ls_data,
                     sp = 'nyala',
                     save = FALSE)
 ```
