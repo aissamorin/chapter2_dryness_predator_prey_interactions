@@ -902,6 +902,82 @@ bc_season_bp_op2_sp  <- function(tab,
 }
 
 
+# > Larger sample analyses ####
+
+
+#' Get 'larger sample' body condition data, i.e. keep subadult, adult & old individuals, with bones collected before 6 days or between 6 & 8 days
+#'
+#' @param tab table containing cleaned fat data
+#' @param save whether we want the outcome to be saved or not
+#'
+#' @return a table with mean fat rate
+#' @export
+
+get_body_condition_data_ls <- function(tab = clean_fat_data,
+                                       save = FALSE){
+
+
+
+
+  bc_data_ls <-
+
+    tab %>%
+    # keep only rows with old or adult or sub-adult individuals & bones collected before 6 days or between 6 & 8 days
+    dplyr::filter(collection_interval %in% c('early','intermediate'),
+                  age %in% c('old', 'adult', 'sub-adult')) %>%
+    #Select columns of interest
+    dplyr::select(samples_ID,
+                  cluster_start_date,
+                  collection_interval,
+                  predator_species,
+                  carcass_species,
+                  sex,
+                  age,
+                  bone_type,
+                  sample_wet_mass,
+                  sample_dry_mass) %>%
+
+    dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass,# compute fat rate
+                  cluster_month = lubridate::month(cluster_start_date), #get the month the prey was killed (?)
+                  #compute season from cluster_month
+                  season1 = dplyr::if_else(cluster_month %in% c(7:10),# lean: 7-10, productive season: 1-6, 11,12
+                                           'lean',
+                                           'productive')) %>%
+    #change factor level order (for graphical presentation purpose)
+    dplyr::mutate(season1 = forcats::fct(season1,levels = c("lean","productive"))) %>%
+    # compute mean fat rate
+    dplyr::group_by(samples_ID,
+                    cluster_start_date,
+                    collection_interval,
+                    predator_species,
+                    carcass_species,
+                    sex,
+                    age,
+                    bone_type,
+                    cluster_month,
+                    season1) %>%
+    dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+
+    dplyr::mutate(body_condition = dplyr::if_else(mean_fat_rate < 0.2,
+                                                  'emaciated',
+                                                  dplyr::if_else(mean_fat_rate >0.20 & mean_fat_rate <0.70,
+                                                                 'thin',
+                                                                 'good'))) %>%
+    #change factor level orger (for graphical presentation purpose) from 1.dry 2.early-dry to 1.early_dry  2.dry
+    dplyr::mutate(body_condition = forcats::fct(body_condition,levels = c("emaciated","thin","good")))
+
+  if(save == TRUE){
+
+    #To save gs_data table
+    readr::write_csv2(bc_data_ls, file =here::here("output", "data_exploration", "bodycondi_data_ls_table.csv"))
+
+  }
+
+  return(bc_data_ls)
+
+}
+
+
 #########################################################################################################################################################
 ######################################## DRAFT ##################################################################
 ##################################################################################################################
