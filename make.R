@@ -363,3 +363,10 @@ bc_season_bp_op2_sp(tab = bc_gs_data,
                     sp = 'nyala',
                     save = FALSE)
 
+
+# A) Larger sample analyses ####
+
+#> data preparation ####
+
+bc_ls_data <- get_body_condition_data_ls(tab = clean_fat_data,
+                           save = F)
