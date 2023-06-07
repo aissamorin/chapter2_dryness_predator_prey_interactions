@@ -351,22 +351,70 @@ bc_season_bp_op1_sp(tab = bc_gs_data,
 
 # Per species
 
+#buffalo
 bc_season_bp_op2_sp(tab = bc_gs_data,
                     sp = 'buffalo',
                     save = FALSE)
 
+
+#warthog
 bc_season_bp_op2_sp(tab = bc_gs_data,
                     sp = 'warthog',
                     save = FALSE)
 
+#nyala
 bc_season_bp_op2_sp(tab = bc_gs_data,
                     sp = 'nyala',
                     save = FALSE)
 
 
-# A) Larger sample analyses ####
+# B) Larger sample analyses ####
 
 #> data preparation ####
 
 bc_ls_data <- get_body_condition_data_ls(tab = clean_fat_data,
                            save = F)
+
+
+#> Option 1 - bc ~ season facet with season  ####
+
+bc_season_bp_op1(tab = bc_ls_data,
+                 save = T)
+
+# Per species
+
+#buffalo
+bc_season_bp_op1_sp(tab = bc_ls_data,
+                    sp = 'buffalo',
+                    save = FALSE)
+#warthog
+bc_season_bp_op1_sp(tab = bc_ls_data,
+                    sp = 'warthog',
+                    save = FALSE)
+#nyala
+bc_season_bp_op1_sp(tab = bc_ls_data,
+                    sp = 'nyala',
+                    save = FALSE)
+
+#> Option 2 - bc ~ season facet with bc  ####
+
+bc_season_bp_op2(tab = bc_ls_data,
+                 save = T)
+
+# Per species
+
+#buffalo
+bc_season_bp_op2_sp(tab = bc_ls_data,
+                    sp = 'buffalo',
+                    save = FALSE)
+
+#warthog
+bc_season_bp_op2_sp(tab = bc_ls_data,
+                    sp = 'warthog',
+                    save = FALSE)
+
+#nyala
+bc_season_bp_op2_sp(tab = bc_ls_data,
+                    sp = 'nyala',
+                    save = FALSE)
+
