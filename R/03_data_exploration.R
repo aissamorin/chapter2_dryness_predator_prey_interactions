@@ -534,6 +534,65 @@ boxplot_main_sp <- function(tab,
 # sub-adult, adult & old individuals, with bones collected before 6 days and within 6 to 8 days
 
 
+#'  Get larger sample data, i.e. keep sub-adult, adult & old individuals only, with bones collected before 6 days or between 6  & 8 days
+#'
+#' @param tab table with cleaned fat data
+#' @param save whether we want the data to be saved or not
+#'
+#' @return a table with larger sample data
+#' @export
+
+get_ls_data <- function(tab = clean_fat_data,
+                        save = FALSE){
+
+
+
+  ls_data <-
+
+    tab %>%
+    # keep only rows with old or adult or sub-adult individuals & bones collected before 6 days or between 6 & 8 days
+    dplyr::filter(collection_interval %in% c('early','intermediate'),
+                  age %in% c('old', 'adult', 'sub-adult')) %>%
+    #Select columns of interest
+    dplyr::select(samples_ID,
+                  cluster_start_date,
+                  collection_interval,
+                  predator_species,
+                  carcass_species,
+                  sex,
+                  age,
+                  bone_type,
+                  sample_wet_mass,
+                  sample_dry_mass) %>%
+
+    dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass,# compute fat rate
+                  cluster_month = lubridate::month(cluster_start_date), #get the month the prey was killed (?)
+                  #compute season from cluster_month
+                  season1 = dplyr::if_else(cluster_month %in% c(7:10),# lean_season: 7-10, productive season: 1-6 & 11,12
+                                           'lean',
+                                           'productive'),
+                  season2 = dplyr::if_else(cluster_month %in% c(1:7),# early_dry: 1-7, dry: 7-12
+                                           'early_dry',
+                                           'dry')) %>%
+    #change factor level orger (for graphical presentation purpose) from 1.dry 2.early-dry to 1.early_dry  2.dry
+    dplyr::mutate(season1 = forcats::fct(season1,levels = c("lean","productive")),
+                  season2 = forcats::fct(season2,levels = c("early_dry","dry")))
+
+
+
+  if(save == TRUE){
+
+    #To save gs_data table
+    readr::write_csv2(ls_data, file =here::here("output", "data_exploration", "ls_data_table.csv"))
+
+  }
+
+  return(ls_data)
+
+}
+
+
+
 # III Body condition analyses ####
 
 #> Gold standard data ####
