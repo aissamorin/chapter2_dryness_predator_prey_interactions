@@ -978,6 +978,197 @@ get_body_condition_data_ls <- function(tab = clean_fat_data,
 }
 
 
+
+# III Fat rate evolution & bone freshness #####
+
+#> Data preparation
+
+#' Get data set to explore fat rate change with increasing analysis waiting time
+#'
+#' @param tab table with raw fat data (i.e. not cleaned yet), should be fat_data_raw
+#' @param save whether we want the table to be save or not, default = F
+#'
+#' @return a table with both sample tested at normal time, and tested according different waiting times
+#' @export
+
+get_fat_rate_evol_data <- function(tab ,
+                                   save = FALSE ) {
+
+
+
+
+temp <-
+
+ tab %>% # tab = fat_data_raw
+  # select column of interest from sample_ID to sample_dry_mass
+  dplyr::select(samples_ID:sample_dry_mass) %>%
+  # Keep only  replicated samples tested after -Jx, etc... /ex 'Hip_B_046-J12'
+  dplyr::filter(stringr::str_detect(samples_ID, "\\-[:upper:]\\d+$"))
+
+# get the carcass(carcass_ID) corresponding to the sample_ID tested after Jx :
+ keep <- unique(fat_rate_evol_data$carcass_ID)
+
+
+#get the table with the samples tested without waiting corresponding to the carcasses in table 'temp':
+  tab2 <- tab %>%
+    # select column of interest from sample_ID to sample_dry_mass
+    dplyr::select(samples_ID:sample_dry_mass) %>%
+    # Remove replicates & samples tested after -Jx, etc... /ex 'Hip_B_046-J12' (--> to avoid duplicates in next steps)
+    dplyr::filter(!stringr::str_detect(samples_ID, "\\-[:upper:]\\d+$"),
+                  carcass_ID %in% keep) %>% # keep the raws (i.e. samples and sample replicate) corresponding to the carcass tested after Jx (stored in the 'keep' vector)
+    # create a J function, contains the number of days before the sample is test, J_base mean normal time (i.e. without waiting <=> bone is fresh), Jx = tested after x days
+    dplyr::mutate(J = factor('J_base'))
+
+
+  # final table :
+  fat_rate_evol_data <-
+
+    temp %>%
+  # remove all 'mass_j1, 'mass_j2' etc... columns '\\d+$' = any number suits
+  dplyr::select(!matches("mass_j\\d+$")) %>%
+  #remove columns: "samples_marrow_fat_rate", "samples_marrow_fat_rate_without_residuals", "bone_marrow_fat_rate_mean",
+  #"bone_marrow_fat_rate_mean_without_residuals","estimated_bc","estimated_bc_without_residuals",  "comments" and any columns after,
+  #Remove empty lines after 233rd row
+  dplyr::filter(!is.na(samples_ID)) %>%
+  # create a J function, contains the number of days before the sample is test, J_base mean normal time, Jx = tested after x days
+  dplyr::mutate(J = stringr::str_extract(samples_ID, "[:upper:]\\d+$")) %>%
+    #transform J in factors, and set factors levels (and order)
+  dplyr::mutate(J = factor(J, levels = c('J_base','J8', 'J9', 'J12'))) %>%
+    # Bind temp (with samples tested after Jx) & tab2 (with corresponding samples tested without waiting )
+    dplyr::bind_rows(., tab2) %>%
+  #Select columns of interest
+  dplyr::select(samples_ID,
+                carcass_ID,
+                cluster_start_date,
+                collection_interval,
+                predator_species,
+                carcass_species,
+                #sex,
+                #age,
+                #bone_type,
+                sample_wet_mass,
+                sample_dry_mass,
+                J) %>%
+  #Compute replicate fat rate (i.e. one per line)
+  dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass) %>%
+    # Arrange per increasing carcass_ID
+  dplyr::arrange(carcass_ID)
+
+
+
+# to save
+if (save == TRUE) {
+
+  readr::write_csv2(fat_rate_evol_data, here::here("output/data_exploration/fat_rate_evolution_dataset.csv"))
+}
+
+
+return(fat_rate_evol_data)
+
+}
+
+
+#> Figures ####
+
+#>> Fat rate ~Bone freshness ####
+
+#' Get boxplots comparing replicate fat rates as function of bone 'freshness', facetted per carcass_ID
+#'
+#' @param tab table with both sample tested at normal time, and tested according different waiting times
+#' @param save whether we want to save the figure or not, default = F
+#'
+#' @return a boxplot comparing replicate fat rates as function of bone 'freshness', facetted per carcass_ID
+#' @export
+
+fat_rate_bone_fresh_bp <- function(tab,
+                                   save = FALSE){
+
+
+
+
+#setting color scale
+lbls <- c('J_base', 'J8', 'J9', 'J12')
+vec_color <- c("#a40000","#16317d","#007e2f","#ffcd12")
+
+
+bp <-
+
+  tab %>% #tab = fat_rate_evol_data
+  ggplot2::ggplot(aes(x = J , y = sample_replicate_fat_rate  , fill = J)) +
+  geom_boxplot() +
+  facet_wrap(~carcass_ID) +
+  theme_bw()+
+  theme(legend.position = "bottom",
+        axis.text.x = (element_text(color ='black'))) +
+  scale_fill_manual( name = "Bone freshness :",
+                     #labels = c('Emaciated', 'Thin', 'Good'),
+                     values = setNames(vec_color, lbls)) +
+  labs(x = "Bone 'freshness' (?)",
+       y = 'Replicate fat rate')
+
+
+if(save == TRUE){
+
+  ggsave(bp, file =here::here("output", "data_exploration", "bp_fat_rate_bone_fresh.jpg"), device = "jpg")
+
+}
+
+return(bp)
+
+}
+
+#>> Mean fat rate ~ Bone freshness ####
+
+#' Get scatterplot showing mean fat rates as function of bone 'freshness', facetted per carcass_ID
+#'
+#' @param tab table with both sample tested at normal time, and tested according different waiting times
+#' @param save whether we want the figure to be saved or not, default = F
+#'
+#' @return a scatterplot of mean fat rate as a function of bone 'freshness', facetted by carcass_ID
+#' @export
+
+mean_fat_rate_bone_fresh_bp <- function(tab,
+                                        save = F){
+
+
+
+
+#setting color scale
+lbls <- c("HiP_C_0474", "HiP_C_0532", "HiP_C_0508")
+vec_color <- c("#a40000", "#007e2f","#16317d")
+
+
+pl <-
+
+  tab %>%  # %>% #tab = fat_rate_evol_data
+  dplyr::group_by(samples_ID, carcass_ID, cluster_start_date, carcass_species, J ) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>% #compute mean sample fat rate
+
+
+  ggplot2::ggplot(aes(x = J , y = mean_fat_rate , group =  carcass_ID, col = carcass_ID)) +
+  # to get a scatterplot <=> a geom_point + a geom_line
+  geom_point() +
+  geom_line() +
+  facet_wrap(~carcass_ID) + # need grouping by carcass ID in the aes
+  theme_bw()+
+  theme(legend.position = "none",
+        axis.text.x = (element_text(color ='black'))) +
+  scale_color_manual(values = setNames(vec_color, lbls)) +
+  labs(x = "Bone 'freshness' (?)",
+       y = 'Mean fat rate')
+
+
+
+if(save == TRUE){
+
+  ggsave(bp, file =here::here("output", "data_exploration", "plot_mean_fat_rate_bone_fresh.jpg"), device = "jpg")
+
+}
+
+return(pl)
+
+}
+
 #########################################################################################################################################################
 ######################################## DRAFT ##################################################################
 ##################################################################################################################
