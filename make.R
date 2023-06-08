@@ -188,6 +188,30 @@ gs_data %>%
                    species_vec = c('buffalo', 'nyala', 'warthog'))
 
 
+# > Statistical analyses #####
+
+# All species ####
+
+wilcox_mann_whitney(tab = gs_data,
+                    species = NULL) # necessary argument to run over all species
+
+# Buffalo
+
+wilcox_mann_whitney(tab = gs_data,
+                species = 'buffalo')
+
+# Nyala
+
+mann_whitney_sp(tab = gs_data,
+                species = 'nyala')
+
+
+# Warthog
+
+mann_whitney_sp(tab = gs_data,
+                species = 'warthog')
+
+
 # B) Larger sample analyses ####
 #Include sub-adult in addition to adult & old individuals, with bones collected before 6 days and within 6 to 8 days
 
