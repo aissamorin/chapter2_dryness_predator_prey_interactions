@@ -921,6 +921,51 @@ bc_season_bp_op2_sp  <- function(tab,
 }
 
 
+# >> Statistical analyses ####
+
+# Two qualitative variables --> Chi.square test
+
+#' Run chi square test on body condition ~ of season
+#'
+#' @param tab table with fat data converted into body condition (categorical variable)
+#' @param sp default = NULL, must indicate the species to run stat test over a given species
+#'
+#' @return the contingency table & chi-square results
+#' @export
+
+chi_test <- function(tab,
+                     sp = NULL){
+
+
+
+
+data_tab <-
+  tab %>% # tab = bc_gs_data
+  dplyr::ungroup() # need to ungroup first to select for variable of interest
+
+# Run statistical test for a given species
+  if(!is.null(sp)){
+    data_tab %<>%
+      dplyr::filter(carcass_species == sp) }  # sp = 'buffalo'
+
+  data_tab %<>%
+  dplyr::select(season1, body_condition ) %>% # variable of interest
+  # Get contingency table :
+    table()
+
+
+
+#str(data_tab)
+#data_sum <- summary(data_tab)
+
+ch_t <- chisq.test(data_tab)
+
+result_list <- list(data_tab, ch_t)
+
+return(result_list)
+
+}
+
 # > Larger sample analyses ####
 
 
