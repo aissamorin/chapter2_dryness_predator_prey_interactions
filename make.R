@@ -414,6 +414,28 @@ bc_season_bp_op2_sp(tab = bc_gs_data,
                     save = FALSE)
 
 
+# > Statistical analysis ####
+
+chi_test(tab = bc_gs_data,
+         sp = NULL)
+
+# Buffalo ####
+
+chi_test(tab = bc_gs_data,
+         sp = 'buffalo')
+
+# Nyala ####
+
+chi_test(tab = bc_gs_data,
+         sp = 'nyala')
+
+# Warthog ####
+
+chi_test(tab = bc_gs_data,
+         sp = 'warthog')
+
+
+
 # B) Larger sample analyses ####
 
 #> data preparation ####
@@ -464,6 +486,28 @@ bc_season_bp_op2_sp(tab = bc_ls_data,
                     sp = 'nyala',
                     save = FALSE)
 
+
+# > Statistical analysis - Chi square test ####
+
+# All species ####
+
+chi_test(tab = bc_ls_data,
+         sp = NULL)
+
+# Buffalo ####
+
+chi_test(tab = bc_ls_data,
+         sp = 'buffalo')
+
+# Nyala ####
+
+chi_test(tab = bc_ls_data,
+         sp = 'nyala')
+
+# Warthog ####
+
+chi_test(tab = bc_ls_data,
+         sp = 'warthog')
 
 # III Fat rate evolution & bone freshness #####
 
