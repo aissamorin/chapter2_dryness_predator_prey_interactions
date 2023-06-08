@@ -8,11 +8,15 @@ devtools::load_all()
 
 # Read data fat analyses raw dataset
 
-fat_data_raw <- read_fat_data_raw()
+#fat_data_raw <- read_fat_data_raw()
+
+# Read updated data fat analyses raw dataset (from 8th June 2023)
+
+fat_data_raw_2 <- read_fat_data_raw_2()
 
 # Clean (and save) raw data
 
-clean_fat_data <- clean_raw_fat_data(fat_data_raw,
+clean_fat_data <- clean_raw_fat_data(fat_data_raw_2,
                                      save = FALSE,
                                      filename = 'cleaned_fat_data')
 
@@ -513,7 +517,7 @@ chi_test(tab = bc_ls_data,
 
 # > Data preparation ####
 
-fat_rate_evol_data <- get_fat_rate_evol_data(tab = fat_data_raw,
+fat_rate_evol_data <- get_fat_rate_evol_data(tab = fat_data_raw_2, # fat_data_raw_2 : updated fat data from june 2023
                        save = F)
 
 # > Figures ####
