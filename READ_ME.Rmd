@@ -38,11 +38,14 @@ Modifications (manual because color coded) on xlxs file -->  column addition: 'c
 + yellow -->  intermediate : sample collected between 6 and 8 days (included ?), 
 + red --> late : sample collected after 8 days (should be exclude from analyses)
 
+For the updated fat data (from 8th June 2023) I have also remove raws 288 --> 309 corresponding to sample that have not been through the whole drying process yet (i.e. not usable).
+
 Saved as a csv file for R processing 
 
 __Read data__
 
-use function 'read_fat_data_raw()' to read csv file with raw fat data from Yolan
+use function 'read_fat_data_raw()' to read csv file with raw fat data from Yolan (from may 2023) & 'read_fat_data_raw_2()' to read updated fat data (from 8th June 2023).
+
 
 ```{r}
 # Load functions and deps ?
@@ -52,7 +55,12 @@ devtools::load_all()
 
 # Read data fat analyses raw dataset
 
-fat_data_raw <- read_fat_data_raw()
+#fat_data_raw <- read_fat_data_raw()
+
+# Read updated data fat analyses raw dataset (from 8th June 2023)
+
+fat_data_raw_2 <- read_fat_data_raw_2()
+
 
 ```
 
@@ -75,7 +83,7 @@ The function include an option to save the cleaned dataset, the user must specif
 
 ```{r}
 
-clean_fat_data <- clean_raw_fat_data(fat_data_raw,
+clean_fat_data <- clean_raw_fat_data(fat_data_raw_2,
                                      save = T,
                                      filename = 'cleaned_fat_data')
 ```
@@ -1254,7 +1262,7 @@ Here I plotted both replicates fat rates (boxplots) and sample mean fat rates (s
 
 # > Data preparation ####
 
-fat_rate_evol_data <- get_fat_rate_evol_data(tab = fat_data_raw,
+fat_rate_evol_data <- get_fat_rate_evol_data(tab = fat_data_raw_2,
                        save = F)
 
 
