@@ -193,23 +193,24 @@ gs_data %>%
 # All species ####
 
 wilcox_mann_whitney(tab = gs_data,
-                    species = NULL) # necessary argument to run over all species
+                    sp = NULL) # necessary argument to run over all species
 
-# Buffalo
+
+# Buffalo ####
 
 wilcox_mann_whitney(tab = gs_data,
-                species = 'buffalo')
+                sp = 'buffalo')
 
-# Nyala
-
-mann_whitney_sp(tab = gs_data,
-                species = 'nyala')
-
-
-# Warthog
+# Nyala ####
 
 mann_whitney_sp(tab = gs_data,
-                species = 'warthog')
+                sp = 'nyala')
+
+
+# Warthog ####
+
+mann_whitney_sp(tab = gs_data,
+                sp = 'warthog')
 
 
 # B) Larger sample analyses ####
@@ -337,6 +338,27 @@ ls_data %>%
                    species_vec = c('buffalo', 'nyala', 'warthog'))
 
 
+# > Statistical analyses - Wilcoxon-Mann-Whitney ####
+
+# All species  ####
+
+wilcox_mann_whitney(tab = ls_data,
+                    sp = NULL)
+
+# Buffalo ####
+
+wilcox_mann_whitney(tab = ls_data,
+                    sp = 'buffalo')
+
+# Nyala   ####
+
+wilcox_mann_whitney(tab = ls_data,
+                    sp = 'nyala')
+
+# Wharthog ####
+
+wilcox_mann_whitney(tab = ls_data,
+                    sp = 'warthog')
 
 # II Body condition analyses ####
 
