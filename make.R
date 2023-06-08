@@ -13,7 +13,7 @@ fat_data_raw <- read_fat_data_raw()
 # Clean (and save) raw data
 
 clean_fat_data <- clean_raw_fat_data(fat_data_raw,
-                                     save = TRUE,
+                                     save = FALSE,
                                      filename = 'cleaned_fat_data')
 
 
