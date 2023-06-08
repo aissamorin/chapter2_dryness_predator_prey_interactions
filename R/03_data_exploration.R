@@ -4,8 +4,8 @@
 
 ########################################################################################################################
 
-require(ggplot2)
-
+require(ggplot2) # for plots
+require(magrittr) # to use assignment pipes
 
 
 # Ia Within sample variation - replicate dry mass ####
@@ -466,60 +466,68 @@ boxplot_main_sp <- function(tab,
 
 
 
-# # >> statistical analyses (exploratory) ####
-#
-# data_tab <-
-#
-#   gs_data %>%
-#   dplyr::group_by(samples_ID, cluster_start_date, cluster_month, season1) %>%
-#   dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
-#   dplyr::ungroup() %>%
-#   dplyr::select(samples_ID, season1, mean_fat_rate)
-#
-#
-# #Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
-#
-# # explanatory variable : season 1 : qualitative
-# # Response variable : mean fat rate : quantitative
-#
-# str(data_tab)
-# summary(data_tab)
-#
-# boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
-# plot(data_tab$mean_fat_rate)
-#
-#
-# # Normality ?
-# hist(data_tab$mean_fat_rate, breaks = 26)
-# shapiro.test(data_tab$mean_fat_rate)
-#
-# # data do not follow a normal distribution --> non parametric tests
-# # --> Wilcoxon Man Whitney :
-#
-# wm1<- wilcox.test(data_tab$mean_fat_rate ~ data_tab$season1)
-# wm1
-#
-#
-#
-# #test ANOVA or 2-sample t-test
-#
-# #ANOVA model
-# lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i
-#
-# summary(lm1)
-#
-# # test du modèle
-# lm0 <- lm( data_tab$mean_fat_rate ~ 1)
-#
-# anova(lm0, lm1)
-# anova(lm1)
-#
-#
-# # Data transformation ?
-#
-# hist(log(data_tab$mean_fat_rate), breaks = 26)
-# hist(sqrt(data_tab$mean_fat_rate), breaks = 26)
-#
+# >> Stat analyses : Wilcoxon-Mann-Whitney ####
+
+
+wilcox_mann_whitney <- function(tab,
+                                sp){
+
+  # data preparation :
+
+data_tab <-
+
+  tab %>% # tab <- gs_data
+  dplyr::group_by(samples_ID, cluster_start_date, cluster_month, season1, carcass_species) %>%
+  dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+  dplyr::ungroup()
+
+# to run wilcox Mann Whitney by species
+  if(!is.null(sp)){
+
+    data_tab %<>% #assignment pipe : update a value by first piping it into one or more rhs expressions, and then assigning the result.
+  dplyr::filter(carcass_species == sp ) %>% # species <- 'buffalo'
+  dplyr::select(samples_ID, carcass_species, season1, mean_fat_rate)
+  } else {
+
+    # to run wilcox Mann Whitney  for all species
+    data_tab %<>%  #assignment pipe
+      dplyr::select(samples_ID, season1, mean_fat_rate)
+
+  }
+
+
+#Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
+
+# explanatory variable : season 1 : qualitative
+# Response variable : mean fat rate : quantitative
+
+
+
+str(data_tab)
+data_sum <- summary(data_tab)
+
+
+boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
+plot(data_tab$mean_fat_rate)
+
+
+# Normality ?
+hist(data_tab$mean_fat_rate)
+shap <- shapiro.test(data_tab$mean_fat_rate)
+
+
+# data do not follow a normal distribution --> non parametric tests
+# --> Wilcoxon Mann Whitney :
+
+wm<- wilcox.test(data_tab$mean_fat_rate ~ data_tab$season1)
+
+result_list <- list(data_sum, shap, wm )
+
+return(result_list)
+
+}
+
+
 
 
 
@@ -1288,6 +1296,60 @@ return(pl)
 #   facet_wrap(~carcass_species)
 #
 # ggsave(mean_fat_rate_month_species, file =here::here("output", "data_exploration", "mean_fat_rate_month_boxplot_species.jpg"), device = "jpg")
+#
+
+# >>> All species ####
+
+# data_tab <-
+#
+#   gs_data %>%
+#   dplyr::group_by(samples_ID, cluster_start_date, cluster_month, season1) %>%
+#   dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
+#   dplyr::ungroup() %>%
+#   dplyr::select(samples_ID, season1, mean_fat_rate)
+#
+#
+# #Question: is there an effect of the season on the (mean?) fat rate of the prey killed by lions ?
+#
+# # explanatory variable : season 1 : qualitative
+# # Response variable : mean fat rate : quantitative
+#
+# str(data_tab)
+# summary(data_tab)
+#
+# boxplot(data_tab$mean_fat_rate ~ data_tab$season1 )
+# plot(data_tab$mean_fat_rate)
+#
+#
+# # Normality ?
+# hist(data_tab$mean_fat_rate, breaks = 26)
+# shapiro.test(data_tab$mean_fat_rate)
+#
+# # data do not follow a normal distribution --> non parametric tests
+# # --> Wilcoxon Man Whitney :
+#
+# wm1<- wilcox.test(data_tab$mean_fat_rate ~ data_tab$season1)
+# wm1
+
+
+# #test ANOVA or 2-sample t-test
+#
+# #ANOVA model
+# lm1 <- lm(data_tab$mean_fat_rate ~ data_tab$season1,data = data_tab ) #Yi = mu + alpha_i
+#
+# summary(lm1)
+#
+# # test du modèle
+# lm0 <- lm( data_tab$mean_fat_rate ~ 1)
+#
+# anova(lm0, lm1)
+# anova(lm1)
+#
+#
+# # Data transformation ?
+#
+# hist(log(data_tab$mean_fat_rate), breaks = 26)
+# hist(sqrt(data_tab$mean_fat_rate), breaks = 26)
 #
 
 
