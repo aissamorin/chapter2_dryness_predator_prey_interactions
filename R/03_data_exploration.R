@@ -1006,7 +1006,7 @@ temp <-
   dplyr::filter(stringr::str_detect(samples_ID, "\\-[:upper:]\\d+$"))
 
 # get the carcass(carcass_ID) corresponding to the sample_ID tested after Jx :
- keep <- unique(fat_rate_evol_data$carcass_ID)
+ keep <- unique(temp$carcass_ID)
 
 
 #get the table with the samples tested without waiting corresponding to the carcasses in table 'temp':
