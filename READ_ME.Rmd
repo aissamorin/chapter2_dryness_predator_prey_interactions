@@ -1230,3 +1230,64 @@ bc_season_bp_op2_sp(tab = bc_ls_data,
                     sp = 'nyala',
                     save = FALSE)
 ```
+
+<br> 
+<br> 
+
+### __IV Fat rate evolution with bone 'freshness'__
+
+<br> 
+
+Here I plotted both replicates fat rates (boxplots) and sample mean fat rates (scatterplot), against bone freshness, with   
+
++ J_base: sample originally included andanalysed within 6 days 
++ J8: sample analyses 8 days after collection (?)
++ J9 : sample analysed 9 days after collection
++ J12: sample analyses 12 days after collection
+
+<br> 
+
+
+
+```{r}
+# III Fat rate evolution & bone freshness #####
+
+# > Data preparation ####
+
+fat_rate_evol_data <- get_fat_rate_evol_data(tab = fat_data_raw,
+                       save = F)
+
+
+```
+
+<br> 
+
+#### A) Replicate fat rate as a function of bone 'freshness'
+
+<br>
+
+```{r}
+# > Figures ####
+
+#>> Boxplot of fat rate ~ Bone 'freshness'
+
+fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
+
+```
+
+<br>
+
+#### B) Sample mean fat rate as a function of bone 'freshness'
+
+
+<br> 
+
+```{r}
+#>> Scatterplot of mean fat rare ~ Bone 'freshness'
+
+mean_fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
+
+```
+
+<br> 
+<br> 
