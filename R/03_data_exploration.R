@@ -469,8 +469,19 @@ boxplot_main_sp <- function(tab,
 # >> Stat analyses : Wilcoxon-Mann-Whitney ####
 
 
+#' Run Wilcoxon-Mann-Whitney statistical test on mean fat rate for either all species or specific species
+#'
+#' @param tab table with replicate fat rate data, either gs_data (gold standard data) or ls-data (larger sample data)
+#' @param sp : NULL for all species, otherwise the species must be specified
+#'
+#' @return 3 figures (plot, boxplot and scatterplots), a data summary, results of shapiro test, results of Wilcoxon Mann Whitney
+#' @export
+
 wilcox_mann_whitney <- function(tab,
                                 sp){
+
+
+
 
   # data preparation :
 
