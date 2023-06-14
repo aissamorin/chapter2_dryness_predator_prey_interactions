@@ -21,6 +21,7 @@ clean_fat_data <- clean_raw_fat_data(fat_data_raw_2,
                                      filename = 'cleaned_fat_data')
 
 
+landsc_BC_data <- read_data_land_BC()
 
 #-----------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -529,4 +530,11 @@ fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
 #>> Scatterplot of mean fat rare ~ Bone 'freshness'
 
 mean_fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
+
+
+# ANALYSES ####
+
+
+
+# FIGURES ####
 
