@@ -8,6 +8,7 @@
 .Rbuildignore
 CONDUCT.md
 CONTRIBUTING.md
+READ_ME.html
 /data/
 /documents/
 /output/
