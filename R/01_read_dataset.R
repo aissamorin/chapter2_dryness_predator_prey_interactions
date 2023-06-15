@@ -44,3 +44,15 @@ read_data_land_BC <- function() {
   readr::read_csv2(here::here('data','data_landscape_BC.csv'))
 
 }
+
+
+#'  Function aims at reading available prey body condition data for comparison with body condition used (i.e. preyed) by lions, per species
+#'
+#' @return a table with the number of individual in each BC catagories (column) per seasons (raws)
+#' @export
+
+read_data_land_BC_sp <- function() {
+
+  readr::read_csv2(here::here('data','data_landscape_BC_species.csv'))
+
+}
