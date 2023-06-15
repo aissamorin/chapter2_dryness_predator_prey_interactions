@@ -1,14 +1,12 @@
 .Rproj.user
-
 #Added manually by Aissa Morin
-
 .Rhistory
 .RData
 .Ruserdata
 .Rbuildignore
 CONDUCT.md
 CONTRIBUTING.md
-READ_ME.html
 /data/
 /documents/
 /output/
+/READ_ME.html
