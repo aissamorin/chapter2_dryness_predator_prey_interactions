@@ -1063,7 +1063,7 @@ get_fat_rate_evol_data <- function(tab ,
 
 temp <-
 
- tab %>% # tab = fat_data_raw
+ tab %>% # tab = fat_data_raw_2
   # select column of interest from sample_ID to sample_dry_mass
   dplyr::select(samples_ID:sample_dry_mass) %>%
   # Keep only  replicated samples tested after -Jx, etc... /ex 'Hip_B_046-J12'
@@ -1081,7 +1081,8 @@ temp <-
     dplyr::filter(!stringr::str_detect(samples_ID, "\\-[:upper:]\\d+$"),
                   carcass_ID %in% keep) %>% # keep the raws (i.e. samples and sample replicate) corresponding to the carcass tested after Jx (stored in the 'keep' vector)
     # create a J function, contains the number of days before the sample is test, J_base mean normal time (i.e. without waiting <=> bone is fresh), Jx = tested after x days
-    dplyr::mutate(J = factor('J_base'))
+    #dplyr::mutate(J = factor('J_base'))
+    dplyr::mutate(D = factor('D<_6'))# modification 16/06/2023
 
 
   # final table :
@@ -1095,9 +1096,11 @@ temp <-
   #Remove empty lines after 233rd row
   dplyr::filter(!is.na(samples_ID)) %>%
   # create a J function, contains the number of days before the sample is test, J_base mean normal time, Jx = tested after x days
-  dplyr::mutate(J = stringr::str_extract(samples_ID, "[:upper:]\\d+$")) %>%
+  dplyr::mutate(D = stringr::str_extract(samples_ID, "[:upper:]\\d+$")) %>%
+  dplyr::mutate(D = stringr::str_replace(D, "[:upper:]", "D")) %>%
     #transform J in factors, and set factors levels (and order)
-  dplyr::mutate(J = factor(J, levels = c('J_base','J8', 'J9', 'J12'))) %>%
+    #dplyr::mutate(J = factor(J, levels = c('J_base','J8', 'J9', 'J12'))) %>%
+    dplyr::mutate(D = factor(D, levels = c('D<_6','D8', 'D9', 'D12'))) %>% # replace J --> D
     # Bind temp (with samples tested after Jx) & tab2 (with corresponding samples tested without waiting )
     dplyr::bind_rows(., tab2) %>%
   #Select columns of interest
@@ -1112,7 +1115,7 @@ temp <-
                 #bone_type,
                 sample_wet_mass,
                 sample_dry_mass,
-                J) %>%
+                D) %>%
   #Compute replicate fat rate (i.e. one per line)
   dplyr::mutate(sample_replicate_fat_rate = sample_dry_mass/sample_wet_mass) %>%
     # Arrange per increasing carcass_ID
