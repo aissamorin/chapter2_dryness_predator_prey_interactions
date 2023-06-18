@@ -20,7 +20,7 @@ clean_fat_data <- clean_raw_fat_data(fat_data_raw_2,
                                      save = FALSE,
                                      filename = 'cleaned_fat_data')
 
-
+# read body condition of prey available in the landscape
 landsc_BC_data <- read_data_land_BC()
 
 #-----------------------------------------------------------------------------------------------------------------------------------------#
@@ -531,10 +531,195 @@ fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
 
 mean_fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
 
+############################# END DATA EXPLORATION ###########################################################
+
+########################################## CHAPTER ##################################################################
+
+# Load functions and deps ?
+devtools::load_all()
+
+#DATA PREPARATION ####
+
+# Read data fat analyses raw dataset
+
+#fat_data_raw <- read_fat_data_raw()
+
+# Read updated data fat analyses raw dataset (from 8th June 2023)
+
+fat_data_raw_2 <- read_fat_data_raw_2()
+
+# Clean (and save) raw data
+
+clean_fat_data <- clean_raw_fat_data(fat_data_raw_2,
+                                     save = TRUE,
+                                     filename = 'cleaned_fat_data')
+
+# read body condition of prey available in the landscape
+#landsc_BC_data <- read_data_land_BC()
+
+# read body condition of prey available in the landscape
+landsc_BC_data_sp <- read_data_land_BC_sp()
+
+# body condition data (larger sample) of prey 'used' by lion
+bc_ls_data <- get_body_condition_data_ls(tab = clean_fat_data,
+                                         save = F)
+
+
 
 # ANALYSES ####
 
+# All species ####
+
+data_use_all_sp <- get_data_use(data_use = bc_ls_data,
+                                save = F,
+                                species = F) #across all species
+
+
+data_av_all_sp <- get_data_available(data_av = landsc_BC_data_sp,
+                                     save = T,
+                                     species = F) #across all species
+
+
+#combine the two data set
+data_all_sp <- combine_data(data_use = data_use_all_sp,
+                            data_av = data_av_all_sp,
+                            save = F,
+                            species = F) #across all species
+
+
+# Jacob index - all species
+
+ratio_table_all_sp <- get_ratio_table(data_tab = data_all_sp,
+                                      save = F,
+                                      species = NULL)
+
+# Per species ####
+
+#data preparation
+
+data_use_per_sp <- get_data_use(data_use = bc_ls_data,
+                                save = F,
+                                species = T)
+
+
+data_av_per_sp <- get_data_available(data_av = landsc_BC_data_sp,
+                                    save = F,
+                                    species = T)
+
+#combine data set :
+
+#combine the two data set
+data_per_sp <- combine_data(data_use = data_use_per_sp,
+                           data_av = data_av_per_sp,
+                           save = F,
+                           species = T)
+
+
+
+# Jacob index - per species
+
+ratio_table_buffalo <- get_ratio_table(data_tab = data_per_sp,
+                                      save = F,
+                                      species = "buffalo")
+
+
+ratio_table_nyala <- get_ratio_table(data_tab = data_per_sp,
+                                       save = F,
+                                       species = "nyala")
+
+ratio_table_warthog <- get_ratio_table(data_tab = data_per_sp,
+                                       save = F,
+                                       species = "warthog")
 
 
 # FIGURES ####
+
+
+# All species
+
+#Figure  - Barplot
+
+# All species
+
+barplot_all_sp <- get_fig_barplot(data_tab = data_all_sp,
+                                  save = F,
+                                  species = NULL)
+
+
+
+# Per species
+
+barplot_buffalo <- get_fig_barplot(data_tab = data_per_sp,
+                                  save = F,
+                                  species = 'buffalo')
+
+
+barplot_nyala <- get_fig_barplot(data_tab = data_per_sp,
+                                   save = F,
+                                   species = 'nyala')
+
+barplot_warthog <- get_fig_barplot(data_tab = data_per_sp,
+                                   save = F,
+                                   species = 'warthog')
+
+
+# Figure - Figure ratio
+
+# All species
+
+fig_ratio_all_sp <- get_fig_ratio(ratio_table = ratio_table_all_sp,
+                                  save = F,
+                                  species = NULL)
+
+# Per species
+
+fig_ratio_buffalo <- get_fig_ratio(ratio_table = ratio_table_buffalo,
+                                  save = F,
+                                  species = 'buffalo')
+
+
+fig_ratio_nyala <- get_fig_ratio(ratio_table = ratio_table_nyala,
+                                   save = F,
+                                   species = 'nyala')
+#one value missing
+
+fig_ratio_warthog <- get_fig_ratio(ratio_table = ratio_table_buffalo,
+                                   save = F,
+                                   species = 'warthog')
+
+# APPENDIX ####
+
+# Appendix 1 - Within sample variability Fat rates CV ####
+
+
+# Get dry mass boxplots (for each )
+get_figA1a_fat_rate_cv(tab = clean_fat_data,
+                       save = T)
+
+# get Coefficient of variation table
+CV_fat_rate_table <- get_CV_fat_rate_table(clean_fat_data,
+                                           save = T)
+
+# Histogram
+get_figA1b_CV_hist(tab = CV_fat_rate_table,
+                   save =  T)
+
+
+high_CV_table <- get_high_CV_table(tab = clean_fat_data,
+                                   CV_fat_rate_table = CV_fat_rate_table,
+                                   value = 0.25,
+                                   save = F)
+
+
+# Appendix 2 - MFR as a function of bone freshness ####
+
+# > Data preparation
+
+fat_rate_evol_data <- get_fat_rate_evol_data(tab = fat_data_raw_2, # fat_data_raw_2 : updated fat data from june 2023
+                                             save = F)
+
+# Figure A2
+
+get_figA2_fat_rate_bone_fresh(tab = fat_rate_evol_data,
+                              save = T)
 
