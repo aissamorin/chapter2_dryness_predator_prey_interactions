@@ -3,6 +3,72 @@
 
 require(ggplot2)
 
+# Table 1 - summary table ####
+
+#' Get data summary table of the number of carcasses for each species, per season
+#'
+#' @param data_use table with the detail of species, season
+#' @param save whether we want to save the table or not, default = T, saved in 'figure' file
+#'
+#' @return return a table with total number of carcasses and the number of carcasses per season, and the totals
+#' @export
+
+get_summary_table <- function(data_use,
+                              save = T){
+
+
+
+summary_table <-
+
+  data_use %>% # tab = bc_ls_data
+  #group by the variable for which to count the number of carcasses/sample size must be counted
+  dplyr::group_by(carcass_species, season1) %>%
+  # count
+  dplyr::summarise(dplyr::n()) %>% # to count the number of carcasses which are coded with a distinct sample_ID
+  # rename the count column
+  dplyr::rename(count = `dplyr::n()`) %>%
+  tidyr::pivot_wider(names_from = c(season1), values_from = count) %>%
+  dplyr::mutate(Total= sum(lean, productive, na.rm = T)) %>%
+  dplyr::relocate(Total, .before = lean) %>%
+  dplyr::rename('Species' = carcass_species,
+                'Lean season' = lean,
+                'Productive season' = productive)
+
+
+
+totals <- c("Total",
+          sum(summary_table$Total),
+          sum(summary_table$`Lean season`, na.rm = T),
+          sum(summary_table$`Productive season`, na.rm= T))
+
+totals <- as.data.frame(totals)
+totals$Names = c('Species', 'Total', 'Lean season', 'Productive season')
+
+
+totals %<>%
+  tibble::tibble() %>%
+  tidyr::pivot_wider(names_from = Names, values_from = totals) %>%
+  dplyr::mutate(Total = as.numeric(Total) ,
+                `Lean season`= as.numeric(`Lean season`),
+                `Productive season` = as.numeric(`Productive season`) )
+
+
+summary_table %<>%
+  dplyr::bind_rows(., totals) # add raw with column totals
+
+#save
+if(save == TRUE){
+
+  readr::write_csv2(summary_table, file =here::here("output", "figures", "summary_table.csv"))
+
+}
+
+
+return(summary_table)
+
+}
+
+
 # FIGURE 1 : Maps ####
 
 # [FIGURE 2 : Schema introduction ] ####
