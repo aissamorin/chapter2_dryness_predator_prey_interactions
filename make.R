@@ -531,9 +531,9 @@ fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
 
 mean_fat_rate_bone_fresh_bp(tab = fat_rate_evol_data)
 
-############################# END DATA EXPLORATION ###########################################################
+############################# END DATA EXPLORATION ####################################################################
 
-########################################## CHAPTER ##################################################################
+########################################## CHAPTER 2 ANALYSIS ##########################################################
 
 # Load functions and deps ?
 devtools::load_all()
@@ -557,7 +557,7 @@ clean_fat_data <- clean_raw_fat_data(fat_data_raw_2,
 # read body condition of prey available in the landscape
 #landsc_BC_data <- read_data_land_BC()
 
-# read body condition of prey available in the landscape
+# read body condition of prey available in the landscape, with prey details
 landsc_BC_data_sp <- read_data_land_BC_sp()
 
 # body condition data (larger sample) of prey 'used' by lion
@@ -576,7 +576,7 @@ data_use_all_sp <- get_data_use(data_use = bc_ls_data,
 
 
 data_av_all_sp <- get_data_available(data_av = landsc_BC_data_sp,
-                                     save = T,
+                                     save = F,
                                      species = F) #across all species
 
 
@@ -590,7 +590,7 @@ data_all_sp <- combine_data(data_use = data_use_all_sp,
 # Jacob index - all species
 
 ratio_table_all_sp <- get_ratio_table(data_tab = data_all_sp,
-                                      save = F,
+                                      save = T,
                                       species = NULL)
 
 # Per species ####
@@ -619,21 +619,25 @@ data_per_sp <- combine_data(data_use = data_use_per_sp,
 # Jacob index - per species
 
 ratio_table_buffalo <- get_ratio_table(data_tab = data_per_sp,
-                                      save = F,
+                                      save = T,
                                       species = "buffalo")
 
 
 ratio_table_nyala <- get_ratio_table(data_tab = data_per_sp,
-                                       save = F,
+                                       save = T,
                                        species = "nyala")
 
 ratio_table_warthog <- get_ratio_table(data_tab = data_per_sp,
-                                       save = F,
+                                       save = T,
                                        species = "warthog")
 
 
 # FIGURES ####
 
+# table 1
+
+summary_table <- get_summary_table(data_use = bc_ls_data,
+                  save = F)
 
 # All species
 
@@ -642,7 +646,7 @@ ratio_table_warthog <- get_ratio_table(data_tab = data_per_sp,
 # All species
 
 barplot_all_sp <- get_fig_barplot(data_tab = data_all_sp,
-                                  save = F,
+                                  save = T,
                                   species = NULL)
 
 
@@ -655,11 +659,11 @@ barplot_buffalo <- get_fig_barplot(data_tab = data_per_sp,
 
 
 barplot_nyala <- get_fig_barplot(data_tab = data_per_sp,
-                                   save = F,
+                                   save = T,
                                    species = 'nyala')
 
 barplot_warthog <- get_fig_barplot(data_tab = data_per_sp,
-                                   save = F,
+                                   save = T,
                                    species = 'warthog')
 
 
@@ -668,23 +672,23 @@ barplot_warthog <- get_fig_barplot(data_tab = data_per_sp,
 # All species
 
 fig_ratio_all_sp <- get_fig_ratio(ratio_table = ratio_table_all_sp,
-                                  save = F,
+                                  save = T,
                                   species = NULL)
 
 # Per species
 
 fig_ratio_buffalo <- get_fig_ratio(ratio_table = ratio_table_buffalo,
-                                  save = F,
+                                  save = T,
                                   species = 'buffalo')
 
 
 fig_ratio_nyala <- get_fig_ratio(ratio_table = ratio_table_nyala,
-                                   save = F,
+                                   save = T,
                                    species = 'nyala')
 #one value missing
 
 fig_ratio_warthog <- get_fig_ratio(ratio_table = ratio_table_buffalo,
-                                   save = F,
+                                   save = T,
                                    species = 'warthog')
 
 # APPENDIX ####
