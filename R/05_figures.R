@@ -133,6 +133,10 @@ get_fig_barplot <-function(data_tab,
 lbls <- c('emaciated', 'thin','good')
 vec_color <- c( "#a50f15", "#ebc174", "#79ad41")
 
+# New facet label
+season.labs <- c("Productive season", "Lean season")
+names(season.labs) <- c("productive", "lean")
+
 
 barplot <-
 
@@ -140,15 +144,34 @@ barplot <-
 
   ggplot2::ggplot(aes(fill = body_condition, y = nb_bc, x = labelx))+
   geom_bar(position='fill', stat="identity")+
-  facet_grid(~season, scales = 'free')+ # remove empty factors (scales = 'free')
-  theme_bw()+
-  theme(legend.position = "bottom",
-        axis.text.x = (element_text(color ='black')))+
+
+  #Facetting
+  facet_grid(~season,
+             scales = 'free', # remove empty factors (scales = 'free')
+             labeller = labeller(season = season.labs) )+ #change/assign new facet label names
+  #Modifying plot theme
+  theme_minimal()+
+  theme(strip.text = element_text(face="bold", size = 16),
+        panel.border = element_rect(colour = '#5d6174', fill = NA, linewidth = 0.5),
+        legend.position = "bottom",
+        legend.title = element_text(size = 15),
+        legend.text = element_text(size = 15),
+        axis.title = element_text(size = 15),
+        axis.title.x = element_text(margin = margin(10,10,10,10)),
+        axis.title.y = element_text(margin = margin(10,10,10,10)),
+        axis.text = element_text(color ='black',
+                                  size = 13.5 ),
+        axis.text.x = element_text(size = 15))+
+
+  # Legends + assign new color
   scale_fill_manual( name = "Body condition :",
                      labels = c('Emaciated', 'Thin', 'Good', 'Fat'),
                      values = setNames(vec_color, lbls)) +
   labs(x = "",
        y = "Proportions")
+
+
+
 
 
 
@@ -198,48 +221,62 @@ facet_col <- data.frame(
 facet_col %<>%
    dplyr::mutate(season = forcats::fct(season,levels = c("productive","lean")))
 
+# New facet labels
+season.labs <- c("Productive season", "Lean season")
+names(season.labs) <- c("productive", "lean")
+
+
 
 # --- #
 
 
 
-ratio_table %<>%
+ratio_table %<>% # ratio_table = ratio_table_all_sp
   dplyr::mutate(fill_col = dplyr::if_else(Jacob_Index <= -0.5 |Jacob_Index >= 0.5,
                                           'YES',
                                           'NO'))
  # dplyr::mutate(season = forcats::fct_relevel(season,levels = c("productive","lean"))) %>%
 
 
-gp <-  ggplot(ratio_table)+
+gp <-
+
+ggplot(ratio_table)+
 
   #get coloured background with colour depending on seasons
   geom_rect(data = facet_col,
             aes(xmin=-Inf, xmax=Inf,
-                ymin=-1, ymax=1, fill= season), alpha= 0.2)+
+                ymin=-1, ymax=1, fill= season), alpha= 0.2) +
 
-  geom_point(aes(x = body_condition, y = Jacob_Index, col = fill_col), size = 4, shape = 18) +
+  geom_point(aes(x = body_condition, y = Jacob_Index, col = fill_col), size = 6, shape = 18) +
 
   geom_hline(yintercept = 0.5, linetype="dashed", col = '#931e18')+
   geom_hline(yintercept = - 0.5, linetype="dashed", col = '#931e18')+
-  geom_hline(yintercept = - 0, size =1.05,  col = 'black')+
-  geom_hline(yintercept = - 1, size =0.5,  col = 'black')+
-  geom_hline(yintercept =  1, size =0.5,  col = 'black')+
+  geom_hline(yintercept = - 0, linewidth =1.05,  col = 'black')+
+  geom_hline(yintercept = - 1, linewidth =0.5,  col = 'black')+
+  geom_hline(yintercept =  1, linewidth =0.5,  col = 'black')+
 
-  facet_wrap(~season) +
+  #facetting
+  facet_grid(~season,
+             labeller = labeller(season = season.labs)) + #change/assign new facet label names) +
 
-  theme_classic()+
-  theme(strip.text = element_text(face="bold", size = 12),
-        #strip.background = element_rect(fill = c('productive' = "#79ad41",  'lean' = "#ebc174" )),
+  #modified plot theme
+  theme_minimal()+
+  theme(strip.text = element_text(face="bold", size = 16),
+        #panel.grid.major.x = element_line(colour = 'black', linetype = "dotted"),
         legend.position = "bottom",
-        legend.text = element_text(size = 13),
-        axis.title = element_text(size = 14),
-        axis.title.x = element_text(margin = margin(10,10,10,10)),
+        legend.title = element_text(size = 15),
+        legend.text = element_text(size = 15),
+        axis.title = element_text(size = 15),
+        axis.title.x = element_text(margin = margin(15,10,10,10)),
         axis.title.y = element_text(margin = margin(10,10,10,10)),
         axis.text = element_text(color ='black',
-                                    size = 13 ))+
+                                 size = 13.5 ),
+        axis.text.x = element_text(size = 15),
+        axis.ticks.x = element_line(colour = 'black', linewidth = 1))+
+
 
   scale_fill_manual(values = c('productive' = "#79ad41",  'lean' = "#ebc174" ),
-                    guide = 'none')+ #remove assocaited legend
+                    guide = 'none')+ #remove associated legend
 
   scale_colour_manual(name = '' ,
                       labels = c('Within -0.5 et + 0.5', 'Above 0.5 or below -0.5'),
