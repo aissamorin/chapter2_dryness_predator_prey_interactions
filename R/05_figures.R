@@ -134,7 +134,7 @@ lbls <- c('emaciated', 'thin','good')
 vec_color <- c( "#a50f15", "#ebc174", "#79ad41")
 
 
-#barplot <-
+barplot <-
 
   fig_table %>%
 
@@ -152,13 +152,13 @@ vec_color <- c( "#a50f15", "#ebc174", "#79ad41")
 
 
 
-if(save == TRUE & is.null(species)){
+if (save == TRUE & is.null(species)){
 
   ggsave(barplot, file =here::here("output", "figures", "barplot_all_sp.jpg"), device = "jpg")
 
-}else if(save == TRUE & !is.null(species)){
+} else if (save == TRUE & !is.null(species)){
 
-  ggsave(barplot, file =here::here(paste("output", "figures", "barplot_buffalo.jpg", sep = '')), device = "jpg")}
+  ggsave(barplot, file =here::here(paste("output/", "figures/", "barplot_",species,".jpg", sep = '')), device = "jpg")}
 
 
 return(barplot)
@@ -252,13 +252,11 @@ gp <-  ggplot(ratio_table)+
 
 if(save == TRUE & is.null(species)){
 
-  ggsave(gp, file =here::here("output", "figures", "fig_ratio_all_sp.jpg"), device = "jpg")} else
+  ggsave(gp, file =here::here("output", "figures", "fig_ratio_all_sp.jpg"), device = "jpg")
 
-    if(save == TRUE & !is.null(species)){
+} else if (save == TRUE & !is.null(species)){
 
-  ggsave(gp, file =here::here(paste("output", "figures", "fig_ratio_",species,".jpg", sep = '')), device = "jpg")
-
-}
+      ggsave(gp, file =here::here(paste("output/", "figures/", "fig_ratio_",species,".jpg", sep = '')), device = "jpg")}
 
 
 return(gp)
