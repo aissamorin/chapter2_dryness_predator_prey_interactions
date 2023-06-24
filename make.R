@@ -590,7 +590,7 @@ data_all_sp <- combine_data(data_use = data_use_all_sp,
 # Jacob index - all species
 
 ratio_table_all_sp <- get_ratio_table(data_tab = data_all_sp,
-                                      save = T,
+                                      save = F,
                                       species = NULL)
 
 # Per species ####
@@ -598,7 +598,7 @@ ratio_table_all_sp <- get_ratio_table(data_tab = data_all_sp,
 #data preparation
 
 data_use_per_sp <- get_data_use(data_use = bc_ls_data,
-                                save = F,
+                                save =F,
                                 species = T)
 
 
@@ -654,7 +654,7 @@ barplot_all_sp <- get_fig_barplot(data_tab = data_all_sp,
 # Per species
 
 barplot_buffalo <- get_fig_barplot(data_tab = data_per_sp,
-                                  save = F,
+                                  save = T,
                                   species = 'buffalo')
 
 
@@ -712,10 +712,12 @@ get_figA1b_CV_hist(tab = CV_fat_rate_table,
 high_CV_table <- get_high_CV_table(tab = clean_fat_data,
                                    CV_fat_rate_table = CV_fat_rate_table,
                                    value = 0.25,
-                                   save = F)
+                                   save = T)
 
+high_CV_table_simplified <- get_high_CV_table_simplified(tab = high_CV_table,
+                                                         save = T)
 
-# Appendix 2 - MFR as a function of bone freshness ####
+# Appendix A - RFR as a function of bone freshness ####
 
 # > Data preparation
 
