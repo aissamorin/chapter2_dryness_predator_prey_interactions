@@ -339,12 +339,13 @@ get_figA1a_fat_rate_cv <- function(tab = clean_fat_data,
                                       angle = 45,
                                       hjust = 1,
                                       size = 6)),
-                         legend.text = element_text(size = 13),
-                         axis.title = element_text(size = 14),
-                         axis.title.x = element_text(margin = margin(10,10,10,10)),
-                         axis.title.y = element_text(margin = margin(10,10,10,10)),
-                         axis.text = element_text(color ='black',
-                                                  size = 13 ))+
+          legend.text = element_text(size = 14),
+          legend.title = element_text(size = 14),
+          axis.title = element_text(size = 14),
+          axis.title.x = element_text(margin = margin(10,10,10,10)),
+          axis.title.y = element_text(margin = margin(10,10,10,10)),
+          axis.text = element_text(color ='black',
+                                   size = 14 ))+
     scale_fill_manual( name = "Collection date :",
                        labels = c('< 6 days', 'between 6 and 8 days', '>8 days'),
                        values = setNames(vec_color, lbls)) +
@@ -383,8 +384,9 @@ get_figA1b_CV_hist <- function(tab,
   fat_rate_CV_hist <-
     tab %>% # tab <- CV_fat_rate_table
 
-    ggplot( aes(CV_fat_rate))+
+    ggplot(aes(CV_fat_rate))+
     geom_histogram(fill = '#ab3329', color = '#65150b')+
+    geom_vline(xintercept = 0.25, color = '#ab3329', linetype = 'dashed' )+
     theme_bw()+
     theme(legend.position = "bottom",
           legend.text = element_text(size = 13),
@@ -394,7 +396,7 @@ get_figA1b_CV_hist <- function(tab,
           axis.title = element_text(size = 14),
           axis.title.x = element_text(margin = margin(10,10,10,10)),
           axis.title.y = element_text(margin = margin(10,10,10,10)))+
-    labs(x = "Fat rate coefficient of variation",
+    labs(x = "Sample fat rate coefficient of variation",
          y = "Number of carcasses")
 
   #To save figure
@@ -404,6 +406,45 @@ get_figA1b_CV_hist <- function(tab,
 
 
   return(fat_rate_CV_hist)
+
+}
+
+
+
+#' Get a simplified table of samples with high coefficient of variation
+#'
+#' @param tab table with the samples with high coefficient of variation
+#' @param save wether we want to save the table or not, saved in figure/appendices/
+#'
+#' @return a table with as many row as the number of samples with high CV
+#' @export
+
+get_high_CV_table_simplified <- function(tab = high_CV_table,
+                              save = F){
+
+high_CV_table_simplified <-
+
+  tab %>% # tab = high_CV_table
+  unique() %>%
+  dplyr::select(samples_ID,
+                carcass_species,
+                nb_sub_samples,mean_fat_rate,
+                sd_fat_rate,
+                CV_fat_rate) %>%
+  dplyr::rename(replicate_number = nb_sub_samples) %>%
+  dplyr::mutate(mean_fat_rate = round(mean_fat_rate, digits = 3),
+                sd_fat_rate = round(sd_fat_rate, digits = 3),
+                CV_fat_rate =  round(CV_fat_rate, digits = 3))
+
+
+if(save == TRUE){
+
+  readr::write_csv2(high_CV_table_simplified, file =here::here("output", "figures",'appendices', "high_CV_table_simplified.csv"))
+
+}
+
+
+return(high_CV_table_simplified)
 
 }
 
@@ -428,7 +469,7 @@ get_figA2_fat_rate_bone_fresh <- function(tab,
   # create facet labels (add species name to carcass_ID)
    tab_label <-
 
-    tab %>%
+    tab %>% # tab = fat_rate_evol_data
     dplyr::select(carcass_ID, carcass_species) %>%
     tidyr::unite(label, carcass_ID, carcass_species, sep ="\n \n ", remove = FALSE) %>%
     dplyr::distinct()
@@ -436,6 +477,7 @@ get_figA2_fat_rate_bone_fresh <- function(tab,
 
   carcass.labs <- tab_label$label
   names(carcass.labs) <- tab_label$carcass_ID
+
 
   #setting color scale
   lbls <- c('D_<6', 'D8', 'D9', 'D12')
@@ -447,18 +489,29 @@ get_figA2_fat_rate_bone_fresh <- function(tab,
   bp <-
 
   tab %>% # tab = fat_rate_evol_data
-    ggplot2::ggplot(aes(x = D , y = sample_replicate_fat_rate  , fill = D)) +
+    ggplot2::ggplot(aes(x = D , y = sample_replicate_fat_rate  , colour = D, fill = D)) +
     geom_boxplot() +
-    facet_grid(~carcass_ID, labeller = labeller(carcass_ID = carcass.labs)) + # change facet labels
+    facet_grid(~carcass_ID,
+               labeller = labeller(carcass_ID = carcass.labs)) + # change facet labels
+
+    #modify plot theme
     theme_bw()+
-    theme(legend.position = "bottom",
-          legend.text = element_text(size = 13),
-          axis.text.x = (element_text(color ='black')),
+    theme(strip.text = element_text(face="bold", size = 16),
+          strip.background = element_rect( colour = 'grey'),
+          legend.position = "bottom",
+          legend.title = element_text(size = 15),
+          legend.text = element_text(size = 15),
+          axis.title = element_text(size = 15),
+          axis.title.x = element_text(margin = margin(15,10,10,10)),
+          axis.title.y = element_text(margin = margin(10,10,10,10)),
           axis.text = element_text(color ='black',
-                                   size = 13 ),
-          axis.title = element_text(size = 14),
-          axis.title.x = element_text(margin = margin(10,10,10,10)),
-          axis.title.y = element_text(margin = margin(10,10,10,10)))+
+                                   size = 13.5 ),
+          axis.text.x = element_text(size = 15))+
+
+    # Set legends / colours
+    scale_colour_manual( name = "Bone freshness :",
+                       #labels = c('Emaciated', 'Thin', 'Good'),
+                       values = setNames(vec_color, lbls)) +
     scale_fill_manual( name = "Bone freshness :",
                        #labels = c('Emaciated', 'Thin', 'Good'),
                        values = setNames(vec_color, lbls)) +
