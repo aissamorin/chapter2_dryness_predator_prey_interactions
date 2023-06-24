@@ -1082,7 +1082,7 @@ temp <-
                   carcass_ID %in% keep) %>% # keep the raws (i.e. samples and sample replicate) corresponding to the carcass tested after Jx (stored in the 'keep' vector)
     # create a J function, contains the number of days before the sample is test, J_base mean normal time (i.e. without waiting <=> bone is fresh), Jx = tested after x days
     #dplyr::mutate(J = factor('J_base'))
-    dplyr::mutate(D = factor('D<_6'))# modification 16/06/2023
+    dplyr::mutate(D = factor('D_<6'))# modification 16/06/2023
 
 
   # final table :
@@ -1100,7 +1100,7 @@ temp <-
   dplyr::mutate(D = stringr::str_replace(D, "[:upper:]", "D")) %>%
     #transform J in factors, and set factors levels (and order)
     #dplyr::mutate(J = factor(J, levels = c('J_base','J8', 'J9', 'J12'))) %>%
-    dplyr::mutate(D = factor(D, levels = c('D<_6','D8', 'D9', 'D12'))) %>% # replace J --> D
+    dplyr::mutate(D = factor(D, levels = c('D_<6','D8', 'D9', 'D12'))) %>% # replace J --> D
     # Bind temp (with samples tested after Jx) & tab2 (with corresponding samples tested without waiting )
     dplyr::bind_rows(., tab2) %>%
   #Select columns of interest
