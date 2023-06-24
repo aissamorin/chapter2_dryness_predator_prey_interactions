@@ -219,7 +219,7 @@ get_ratio_table <- function(data_tab,
 
   #To save table
   if(save == TRUE & !is.null(species)){
-    readr::write_csv2(ratio_table, file =here::here(paste("output", "data_analyses", "ratio_table",species,".csv", sep = '')))}
+    readr::write_csv2(ratio_table, file =here::here(paste("output/", "data_analyses/", "ratio_table",species,".csv", sep = '')))}
   else if (save == TRUE & is.null(species)){
   readr::write_csv2(ratio_table, file =here::here("output", "data_analyses", "ratio_table_all_sp.csv"))
 }
