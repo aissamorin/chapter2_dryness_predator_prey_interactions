@@ -548,7 +548,6 @@ hip_roads <- sf::st_read(here::here("data","layers_SIG", "HiP_shapes","Infrastru
 hip_section_boundary <- sf::st_read(here::here("data","layers_SIG", "HiP_shapes","Infrastructures", "HiP_SectionBoundary.shp"))
 hip_waterholes <- sf::st_read(here::here("data","layers_SIG", "HiP_shapes","Water", "HiP_Waterholes_with_water_in_winter.shp"))
 
-carcass_points <-  sf::st_read(here::here("data","layers_SIG",'Data_carcass', "data_carcass.shp"))
 
 # Word and South Africa maps
 
@@ -578,6 +577,8 @@ south_africa <- south_africa %>% sf::st_transform("+proj=utm +zone=36 +south +da
 
 carcass_points <- carcass_points %>%  sf::st_transform("+proj=utm +zone=36 +south +datum=WGS84")
 
+carcass_points[1,1] <- "HiP_C_0013" # manually correct ID error in name --> 42 carcasses
+
 # cross tables to keep only the 42 carcasses included into the chapter
 
 #get carcass id
@@ -598,7 +599,7 @@ carcass_points_2 <- carcass_points %>%
   dplyr::select(samples_ID,carcass_ID, x, y, keep, geometry) %>%
   dplyr::filter(keep == 'YES')
 
-# ATTENTION : Location of one carcass missing : samples_ID : HiP_B_001, Carcass_ID : HiP_C_0013
+# ATTENTION : Location of one carcass missing : samples_ID : HiP_B_001, Carcass_ID : HiP_C_0013 --> resolved, related to a naming error of carcass id
 
 # Maps ####
 
