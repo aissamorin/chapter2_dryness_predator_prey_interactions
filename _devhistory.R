@@ -19,6 +19,13 @@ usethis::use_package("stringr")
 usethis::use_package("sf")
 usethis::use_package("readxl")
 usethis::use_package("lubridate")
+usethis::use_package("maps")
+usethis::use_package("ggsn")# retire in 10/2023
+usethis::use_package("ggspatial")
+usethis::use_package("rnaturalearth")
+usethis::use_package("rnaturalearthdata")
+usethis::use_package("ggpubr")
+usethis::use_package("gridExtra")
 
 # To use pipe
 usethis::use_pipe()
