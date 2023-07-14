@@ -3,6 +3,7 @@
 
 require(ggplot2)
 
+
 # Table 1 - summary table ####
 
 #' Get data summary table of the number of carcasses for each species, per season
@@ -526,6 +527,160 @@ get_figA2_fat_rate_bone_fresh <- function(tab,
   }
 
   return(bp)
+
+}
+
+
+# ### MAPPING ####
+
+
+
+get_maps <- function(...){
+
+  #data preparation ####
+
+  #Import HiP shapefile
+
+hip_boundary <- sf::st_read(here::here("data","layers_SIG", "HiP_shapes","Infrastructures", "HiP_Boundary.shp"), layer = "hip_boundary")
+hip_boundary_poly <- sf::st_read(here::here("data","layers_SIG", "HiP_shapes","Infrastructures", "HiP_Boundary_poly_utm.shp"))
+hip_roads <- sf::st_read(here::here("data","layers_SIG", "HiP_shapes","Infrastructures", "HiP_Road.shp"))
+hip_section_boundary <- sf::st_read(here::here("data","layers_SIG", "HiP_shapes","Infrastructures", "HiP_SectionBoundary.shp"))
+hip_waterholes <- sf::st_read(here::here("data","layers_SIG", "HiP_shapes","Water", "HiP_Waterholes_with_water_in_winter.shp"))
+
+carcass_points <-  sf::st_read(here::here("data","layers_SIG",'Data_carcass', "data_carcass.shp"))
+
+# Word and South Africa maps
+
+worldmap <- rnaturalearth::ne_countries(scale = 'medium', type = 'map_units',
+                         returnclass = 'sf')
+
+africa <- worldmap[worldmap$continent == 'Africa',]
+south_africa <- worldmap[worldmap$name == 'South Africa',]
+
+
+# Projections
+
+hip_boundary <- hip_boundary %>% sf::st_transform("+proj=utm +zone=36 +south +datum=WGS84")
+hip_boundary_poly <- hip_boundary_poly %>% sf::st_transform( crs = ("+proj=utm +zone=36 +south +datum=WGS84"))
+hip_roads <- hip_roads %>% sf::st_transform( crs = ("+proj=utm +zone=36 +south +datum=WGS84"))
+hip_section_boundary <- hip_section_boundary %>% sf::st_transform( crs = ("+proj=utm +zone=36 +south +datum=WGS84"))
+hip_waterholes <- hip_waterholes %>% sf::st_transform( crs = ("+proj=utm +zone=36 +south +datum=WGS84"))
+
+
+
+
+africa <- africa %>% sf::st_transform("+proj=utm +zone=36 +south +datum=WGS84")
+south_africa <- south_africa %>% sf::st_transform("+proj=utm +zone=36 +south +datum=WGS84")
+
+
+# survey points ####
+
+carcass_points <- carcass_points %>%  sf::st_transform("+proj=utm +zone=36 +south +datum=WGS84")
+
+# cross tables to keep only the 42 carcasses included into the chapter
+
+#get carcass id
+carcass_id <- fat_data_raw_2 %>%
+ dplyr::select(samples_ID, carcass_ID )
+
+
+survey_points <- bc_ls_data %>%
+  dplyr::ungroup() %>%
+  dplyr::left_join(., carcass_id, by = 'samples_ID') %>% # add carcass id to chapter data with only samples id
+  dplyr::select(samples_ID,carcass_ID) %>%
+  unique() %>%
+  dplyr::mutate(keep = 'YES')# to select the carcasses afterwards
+
+#in the carcass points layer, keep only the carcasses included in the chapter, N= 42
+carcass_points_2 <- carcass_points %>%
+  dplyr::left_join(., survey_points, by ='carcass_ID') %>%
+  dplyr::select(samples_ID,carcass_ID, x, y, keep, geometry) %>%
+  dplyr::filter(keep == 'YES')
+
+# ATTENTION : Location of one carcass missing : samples_ID : HiP_B_001, Carcass_ID : HiP_C_0013
+
+# Maps ####
+
+# Africa
+
+g_africa <-
+  ggplot() +
+  geom_sf(data = africa, fill = "white", col = "black", ) +
+  geom_sf(data = south_africa, fill = "darkred") +
+  theme_bw()+
+  theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank())+
+  coord_sf()+
+  ggspatial::annotation_scale(location = 'br', line_width = 1)
+
+ggsave("./output/maps/map_africa.jpg",g_africa ,height = 10,width = 7,units = "cm", dpi = 600 )
+
+
+g_south_africa <-
+  ggplot() +
+  geom_sf(data = south_africa, fill = "white") +
+  geom_sf(data= hip_boundary_poly, fill = "darkred")+
+  theme_bw()+
+  theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank())+
+   coord_sf(ylim = c( 7547199, 5900000))+ # 4787702
+  ggspatial::annotation_scale(location = 'br', line_width = 1)
+
+  ggsave("./output/maps/map_south_africa.jpg",g_south_africa ,height = 10,width = 10,units = "cm", dpi = 600 )
+
+
+
+
+#Study site
+
+g_HiP<-
+
+ggplot()+
+  geom_sf(data = hip_boundary_poly, fill ="#a6d96a", col ='#2c4b27', linewidth = 1.05)+ #2c4b27
+  #geom_sf(data = hip_boundary, col= "#a6d96a")+
+  #geom_sf(data = hip_section_boundary)+
+  geom_sf(data = hip_roads, col = "black", linewidth = 0.8,  aes(linetype = "solid"))+
+  #geom_sf(data = hip_waterholes, aes(col ="#74add1"))+
+  geom_sf(data = carcass_points_2, aes(col = "black", fill = "black"), shape = 22, size = 4 )+
+  theme_classic() +
+  theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        legend.position = "right",
+        legend.title = element_text(size = 12.5),
+        legend.text = element_text(size = 12.5))+
+  scale_linetype_manual(name = "",
+                  values = "solid",
+                  label = "Roads")+
+  scale_colour_manual(name = "",
+                     label = 'Carcasses',
+                      values= 'black')+
+  scale_fill_manual(name = "",
+                      label = 'Carcasses',
+                      values= '#ffcd12')+
+  coord_sf()+
+  ggspatial::annotation_scale(location = 'br', line_width = 4, text_cex = 2)+
+  ggspatial::annotation_north_arrow(location = "tl", which_north = "true")
+
+
+ #north <- ggplot() + theme_bw()+ ggspatial::annotation_north_arrow(location = "tr", which_north = "true")
+g_HiP_legend <- ggpubr::get_legend(g_HiP)
+g_HiP_nolegend<- g_HiP + theme(legend.position = "none")
+
+### save map ####
+
+#ggsave("./output/maps/chapter_2_survey_map.jpg",g_HiP, height = 20,width = 25,units = "cm", dpi = 600 )
+ggsave("./output/maps/chapter_2_survey_map.jpg",g_HiP_nolegend, height = 20,width = 25,units = "cm", dpi = 600 )
+ggsave("./output/maps/legend_chapter_2_map.jpg",g_HiP_legend, height = 10,width =10,units = "cm", dpi = 600)
+#ggsave("./output/maps/north.jpg",north, height = 3,width =3,units = "cm", dpi = 600)
 
 }
 
