@@ -63,6 +63,7 @@ get_data_use <- function(data_use,
   dplyr::summarise(nb_bc = dplyr::n()) %>%
   #Compute proportion per season ( must equate 100% within each season)
   dplyr::mutate(proportion = nb_bc/sum(nb_bc)) %>%
+  dplyr::mutate(proportion = round(proportion, digits = 3)) %>%
   dplyr::mutate(prey = 'used') %>%
   dplyr::ungroup()
 
@@ -127,6 +128,7 @@ get_data_available <- function(data_av,
   data_available %<>%
   # Compute the number of individual prey within each category per season and per body condition
   dplyr::mutate(proportion = nb_bc/sum(nb_bc)) %>%
+  dplyr::mutate(proportion = round(proportion, digits = 3)) %>%
   dplyr::mutate(prey = 'available') %>%
   dplyr::ungroup() %>%
   dplyr::mutate(body_condition = factor(body_condition, levels = c('emaciated', 'thin', 'good')),
@@ -214,7 +216,10 @@ get_ratio_table <- function(data_tab,
 
   #Compute Jacob's index (using function J_I()) :
   ratio_table %<>%
-  dplyr::mutate(Jacob_Index = J_I(used,available))
+  dplyr::mutate(Jacob_Index = J_I(used,available)) %>%
+    dplyr::mutate(used = round(used, digits = 3),
+                  available = round(available, digits = 3),
+                  Jacob_Index =  round(Jacob_Index, digits = 3))
 
 
   #To save table
