@@ -31,6 +31,7 @@ summary_table <-
   tidyr::pivot_wider(names_from = c(season1), values_from = count) %>%
   dplyr::mutate(Total= sum(lean, productive, na.rm = T)) %>%
   dplyr::relocate(Total, .before = lean) %>%
+  dplyr::relocate(lean, .after = productive) %>%
   dplyr::rename('Species' = carcass_species,
                 'Lean season' = lean,
                 'Productive season' = productive)
