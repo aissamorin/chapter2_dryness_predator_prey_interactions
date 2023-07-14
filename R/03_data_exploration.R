@@ -983,9 +983,10 @@ get_body_condition_data_ls <- function(tab = clean_fat_data,
 
 
 
+
   bc_data_ls <-
 
-    tab %>%
+    tab %>% # tab = clean_fat_data
     # keep only rows with old or adult or sub-adult individuals & bones collected before 6 days or between 6 & 8 days
     dplyr::filter(collection_interval %in% c('early','intermediate'),
                   age %in% c('old', 'adult', 'sub-adult')) %>%
@@ -1017,7 +1018,7 @@ get_body_condition_data_ls <- function(tab = clean_fat_data,
                     carcass_species,
                     sex,
                     age,
-                    bone_type,
+                    #bone_type,
                     cluster_month,
                     season1) %>%
     dplyr::summarise(mean_fat_rate = mean(sample_replicate_fat_rate)) %>%
@@ -1028,7 +1029,10 @@ get_body_condition_data_ls <- function(tab = clean_fat_data,
                                                                  'thin',
                                                                  'good'))) %>%
     #change factor level orger (for graphical presentation purpose) from 1.dry 2.early-dry to 1.early_dry  2.dry
-    dplyr::mutate(body_condition = forcats::fct(body_condition,levels = c("emaciated","thin","good")))
+    dplyr::mutate(body_condition = forcats::fct(body_condition,levels = c("emaciated","thin","good"))) %>%
+    #Remove the sample_ID with high fat rate coefficient of variation :
+    dplyr::filter(!samples_ID == 'HiP_B_055')# modif 25/06/2023
+
 
   if(save == TRUE){
 
